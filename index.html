@@ -172,7 +172,8 @@ var CURSOS=[
  {nome:'Curso de SQL',ref:'Meses 1 a 2',sustenta:'Pergunta de negócio do mês em SQL',pts:40,id:'sqlc'},
  {nome:'Certificação do Google Analytics (Skillshop)',ref:'Mês 1',sustenta:'Plano de mensuração e leitura de relatórios',pts:40,id:'ga'},
  {nome:'Certificação de digital analytics',ref:'Meses 2 a 3',sustenta:'Feature mensurada de ponta a ponta',pts:60,id:'mb'},
- {nome:'Formação em liderança de produto digital',ref:'Meses 3 a 6',sustenta:'Discovery e one-pager de oportunidade',pts:100,id:'tera'}];
+ {nome:'Formação em liderança de produto digital',ref:'Meses 3 a 6',sustenta:'Discovery e one-pager de oportunidade',pts:100,id:'tera'},
+ {nome:'Estatística básica e intermediária',ref:'Meses 2 a 4',sustenta:'Teste A/B (dia 100) e leitura de significância nas análises',pts:60,id:'est'}];
 var ANALISES=[
  ['Dia 20','Funil de conversão','Conversão e abandono por etapa, por dispositivo e por segmento; onde está a maior perda.'],
  ['Dia 40','CRM','Entrega, abertura, clique e conversão pós-clique de e-mail, push e SMS, por segmento; descadastro.'],
@@ -182,7 +183,7 @@ var ANALISES=[
  ['Dia 120','SEO','Sessões orgânicas de marca e não marca, páginas de entrada, CTR e posição por consulta, conversão do orgânico.']];
 var PUBLICO=['Squad','Squad','Squad e especialista de analytics','Squads parceiras e coordenação','Squads parceiras e coordenação','Fórum com a liderança sênior'];
 var REDE=[['Coordenação ou par sênior 1','Meses 2 a 3'],['Coordenação ou par sênior 2','Meses 2 a 3'],['Coordenação ou par sênior 3','Meses 2 a 3'],['Coordenação ou par sênior 4','Meses 2 a 3'],['Gerência 1','Mês 4'],['Gerência 2','Mês 4'],['Liderança sênior','Meses 5 a 6']];
-var MARCOS=[['6 semanas','Rotina cumprida por 6 semanas seguidas, roadmap de estudo aprovado e mentor externo escolhido.'],['3 meses','Feature mensurada de ponta a ponta e feedback de 4 coordenadores ou pares seniores.'],['4 meses','One-pager de oportunidade apresentado à squad e feedback de 2 gerentes.'],['6 meses','Resultado apresentado à liderança sênior, quatro formações concluídas e síntese dos 8 feedbacks entregue.']];
+var MARCOS=[['6 semanas','Rotina cumprida por 6 semanas seguidas, roadmap de estudo aprovado e mentor externo escolhido.'],['3 meses','Feature mensurada de ponta a ponta e feedback de 4 coordenadores ou pares seniores.'],['4 meses','One-pager de oportunidade apresentado à squad e feedback de 2 gerentes.'],['6 meses','Resultado apresentado à liderança sênior, cinco formações concluídas e síntese dos 8 feedbacks entregue.']];
 var RITOS=[
  ['plan','Planejamento de segunda','Entregas da semana listadas, 3 prioritárias marcadas e compartilhadas',true],
  ['road','Roadmap atualizado','Status de cada entrega, datas e dependências',true],
@@ -192,7 +193,7 @@ var RITOS=[
  ['pmo','Reporte de PMO','Antes de cada rito de PMO: status, riscos e próximos passos',false],
  ['res','Resultados dos projetos','A cada 15 dias ou após release: indicador, meta e "e daí?"',false]];
 var REQ=RITOS.filter(function(r){return r[3]}).map(function(r){return r[0]});
-var DIVS=[[0,'Base','Defesa','Ponto de partida'],[250,'Profissional','Meio-campo','Escolhe a próxima demanda que quer pegar'],[600,'Titular','Ataque','Apresenta um resultado na review no lugar do gestor'],[1000,'Craque','Grande área','Um dia de estudo livre e um curso ou livro à escolha']];
+var DIVS=[[0,'Base','Defesa','Começando a temporada: rotina e fundamentos'],[250,'Profissional','Meio-campo','Rotina firme e primeiras análises entregues'],[600,'Titular','Ataque','Entrega com autonomia e apresenta para fora da squad'],[1000,'Craque','Grande área','Temporada fechada com evidências em todas as frentes']];
 /* id, camisa, jogada, pontos, máximo, seção onde registrar */
 var MS=[
  ['rot',1,'Semana com a rotina completa',5,24,'rotina'],
@@ -200,7 +201,8 @@ var MS=[
  ['road',2,'Roadmap de estudo apresentado até a 2ª semana',30,1,'cursos'],
  ['sqlc',2,'Curso de SQL concluído',40,1,'cursos'],
  ['ga',3,'Certificação do Google Analytics',40,1,'cursos'],
- ['mb',4,'Certificação de digital analytics',60,1,'cursos'],
+ ['mb',3,'Certificação de digital analytics',60,1,'cursos'],
+ ['est',4,'Curso de estatística básica e intermediária concluído',60,1,'cursos'],
  ['anal',5,'Análise de fonte de tráfego apresentada',40,6,'analises'],
  ['sqlm',5,'Pergunta de negócio do mês respondida em SQL',15,6,'analises'],
  ['tera',6,'Formação em liderança de produto concluída',100,1,'cursos'],
@@ -217,7 +219,7 @@ var MS=[
  ['gol',0,'Jogo decisivo vencido (gol)',100,4,'jogos']];
 var PLAYERS=[
  {n:1,pos:'Goleiro',name:'Rotina',x:70,y:330,gk:true},{n:2,pos:'Lateral direito',name:'SQL',x:250,y:545},
- {n:3,pos:'Zagueiro',name:'Google',x:215,y:405},{n:4,pos:'Zagueiro',name:'Analytics',x:215,y:255},
+ {n:3,pos:'Zagueiro',name:'Certificações',x:215,y:405},{n:4,pos:'Zagueiro',name:'Estatística',x:215,y:255},
  {n:6,pos:'Lateral esquerdo',name:'Produto Digital',x:250,y:115},{n:5,pos:'Volante',name:'Análises',x:420,y:330},
  {n:8,pos:'Meia',name:'Mensuração',x:570,y:455},{n:10,pos:'Meia',name:'Produto',x:570,y:205},
  {n:7,pos:'Ponta direita',name:'Posts',x:800,y:540},{n:11,pos:'Ponta esquerda',name:'Apresentações',x:800,y:120},
@@ -359,20 +361,20 @@ function pitch(R,vert){
 
 /* ---------- Guias e boas-vindas ---------- */
 var GUIDES={
- inicio:['book','Comece por aqui',['Leia as regras uma vez: elas explicam de onde vem cada ponto.','Preencha seu nome, o nome do gestor e a data de início da temporada.','Use Exportar backup de vez em quando: os dados ficam só neste navegador.']],
+ inicio:['book','Comece por aqui',['Leia as regras uma vez: elas explicam de onde vem cada ponto.','Preencha seu nome, o nome do mentor e a data de início da temporada.','Use Exportar backup de vez em quando: os dados ficam só neste navegador.']],
  campo:['ball','Como ler o campo',['O placar no topo soma tudo o que você registrou nas outras abas.','Toque numa camisa para ver as jogadas dela e ir direto à aba onde se registra.','A bola na linha de fundo avança conforme os pontos sobem.']],
- pdi:['form','Seu plano de desenvolvimento',['Escreva com suas palavras: o objetivo de 3 anos e como você se vê.','As fortalezas e oportunidades vêm da conversa com o gestor e dos feedbacks.','Esta aba não dá pontos: ela é o mapa que orienta todas as outras.']],
+ pdi:['form','Seu plano de desenvolvimento',['Escreva com suas palavras: o objetivo de 3 anos e como você se vê.','As fortalezas e oportunidades vêm da conversa com o mentor e dos feedbacks.','Esta aba não dá pontos: ela é o mapa que orienta todas as outras.']],
  rotina:['whistle','Sua rotina semanal',['Escolha a semana na grade e marque cada rito quando ele acontecer.','A semana fica verde quando os 5 ritos obrigatórios estão marcados: vale 5 pontos.','Se alguém precisar cobrar status, registre um cartão amarelo. A meta é zero.']],
- cursos:['book','Roadmap de estudo',['Até a 2ª semana, preencha início, conclusão e horas por semana de cada formação.','Marque o roadmap como apresentado depois de mostrar ao gestor: vale 30 pontos.','Mude o status para Concluído quando terminar, com o certificado em mãos.']],
+ cursos:['book','Roadmap de estudo',['Até a 2ª semana, preencha início, conclusão e horas por semana de cada formação.','Marque o roadmap como apresentado depois de mostrar ao mentor: vale 30 pontos.','Mude o status para Concluído quando terminar, com o certificado em mãos.']],
  agenda:['cal','Agenda do mês',['Uma apresentação interna e um post no LinkedIn por mês, durante 6 meses.','Registre o tema antes e marque Feita ou Publicado depois.','Nos posts, nada de dado interno, print ou nome de cliente.']],
- analises:['chart','Análises a cada 20 dias',['Defina a pergunta de negócio com o gestor antes de abrir os dados.','Registre achado e recomendação: é o "e daí?" que transforma número em decisão.','Marque Apresentada depois de mostrar à squad: vale 40 pontos.']],
- entregas:['form','Mensuração e produto',['Cole o link da evidência (documento, dashboard, ticket) antes de marcar.','Cada entrega marcada soma pontos para as camisas 8 e 10.','Em dúvida se conta? Leve para o 1:1 e decida com o gestor.']],
+ analises:['chart','Análises a cada 20 dias',['Defina a pergunta de negócio com o mentor antes de abrir os dados.','Registre achado e recomendação: é o "e daí?" que transforma número em decisão.','Marque Apresentada depois de mostrar à squad: vale 40 pontos.']],
+ entregas:['form','Mensuração e produto',['Cole o link da evidência (documento, dashboard, ticket) antes de marcar.','Cada entrega marcada soma pontos para as camisas 8 e 10.','Em dúvida se conta? Leve para o 1:1 e decida com o mentor.']],
  rede:['people','Rede de feedback',['Use o roteiro das 4 perguntas em todas as conversas.','A conversa conta quando tem data e o que você ouviu registrado.','Traga o registro para o 1:1 seguinte.']],
- jogos:['goal','Jogos decisivos',['São os quatro marcos da temporada. Cada um vencido vale um gol e 100 pontos.','Registre a evidência e marque o gol só depois de conferir com o gestor.','Os jogos seguem a ordem: 6 semanas, 3, 4 e 6 meses.']]};
+ jogos:['goal','Jogos decisivos',['São os quatro marcos da temporada. Cada um vencido vale um gol e 100 pontos.','Registre a evidência e marque o gol só depois de conferir com o mentor.','Os jogos seguem a ordem: 6 semanas, 3, 4 e 6 meses.']]};
 var WELCOME=[
  ['ball','Bem-vindo à Temporada de Growth','São 6 meses para virar analista de Growth. Cada coisa que você faz no trabalho vira uma jogada que rende pontos.'],
  ['form','Registre o que fez','Cada aba tem um formulário simples. Marcou como feito, com evidência, o ponto entra sozinho no placar.'],
- ['cup','Suba de divisão','Base, Profissional, Titular e Craque. Cada divisão tem um prêmio combinado com o gestor.'],
+ ['cup','Suba de divisão','Base, Profissional, Titular e Craque. A divisão mostra quanto da temporada você já percorreu.'],
  ['whistle','Guias quando você quiser','Toda seção tem um botão Guia no topo. Ligue para ver as dicas, desligue quando já souber o caminho.']];
 function guideOn(sec){return S.guias[sec]!==false}
 function head(sec,title,lead){var on=guideOn(sec),g=GUIDES[sec];
@@ -389,16 +391,16 @@ var V={};
 V.inicio=function(){
   var s='<section class="hero"><div style="display:flex;flex-direction:column;gap:12px"><h2>Temporada de <span>Growth</span></h2><p>Um programa de 6 meses para formar analista de Growth. Rotina, cursos, análises, entregas, apresentações e feedback viram jogadas de uma temporada de futebol: você registra o que fez e o placar mostra a evolução.</p><div class="row"><button class="btn primary" data-a="go" data-s="campo">Ver o campo</button><button class="btn" style="background:transparent;color:#F4F7F0;border-color:#5b7364" data-a="wopen">Rever boas-vindas</button></div></div><div>'+zonesFig()+'</div></section>';
   s+=head('inicio','Regras da temporada','Leia uma vez com calma. Tudo o que vale ponto está aqui, e cada ponto sai de um registro seu.');
-  s+='<div class="card"><h3>Jogador e temporada</h3><div class="grid3">'+txt('perfil.nome','Seu nome','Como quer aparecer no placar')+txt('perfil.gestor','Gestor','Quem confere o placar no 1:1')+txt('perfil.inicio','Início da temporada','',{type:'date'})+'</div></div>';
+  s+='<div class="card"><h3>Jogador e temporada</h3><div class="grid3">'+txt('perfil.nome','Seu nome','Como quer aparecer no placar')+txt('perfil.gestor','Mentor','Quem confere o placar no 1:1')+txt('perfil.inicio','Início da temporada','',{type:'date'})+'</div></div>';
   s+='<h3>1. Como funciona</h3><div class="fig">'+flowFig()+'</div>';
   s+='<div class="steps3"><div class="step"><b>1</b><strong>Registre</strong><p class="muted small">Cada aba é um formulário: Rotina, Cursos, Agenda, Análises, Entregas, Feedback e Jogos.</p></div><div class="step"><b>2</b><strong>Pontue</strong><p class="muted small">Ao marcar algo como feito, o programa soma os pontos daquela jogada sozinho.</p></div><div class="step"><b>3</b><strong>Suba</strong><p class="muted small">Os pontos levam a bola pelo campo e mudam a sua divisão.</p></div></div>';
   s+='<h3>2. Os 11 jogadores</h3><p class="muted">Cada frente do programa é uma posição no campo. O goleiro é a rotina, porque segura tudo. A defesa são os estudos, o meio-campo são análises e entregas, e o ataque é o que você mostra para fora: apresentações, posts e feedback.</p>';
   s+='<div class="tablewrap card" style="padding:8px"><table><thead><tr><th>Camisa</th><th>Jogada</th><th>Pontos</th><th>Máximo</th><th class="hide-mobile">Onde registrar</th></tr></thead><tbody>'+MS.map(function(m){var sec=SECS.filter(function(x){return x[0]===m[5]})[0][1];return '<tr><td class="n">'+(m[1]||'Gol')+'</td><td>'+esc(m[2])+'</td><td class="n">'+m[3]+'</td><td class="n">'+m[4]+'x</td><td class="hide-mobile"><button class="btn ghost" style="min-height:30px;padding:2px 10px" data-a="go" data-s="'+m[5]+'">'+sec+'</button></td></tr>'}).join('')+'<tr class="cur"><td></td><td>Total em disputa</td><td class="n">'+fmt(R.max)+'</td><td></td><td class="hide-mobile"></td></tr></tbody></table></div>';
-  s+='<div class="rules"><div class="card"><div class="row">'+ICON.cup.replace('<svg','<svg width="44" height="44"')+'<h3>3. Divisões e prêmios</h3></div><table><tbody>'+DIVS.map(function(d,i){return '<tr'+(i===R.di?' class="cur"':'')+'><td><strong>'+d[1]+'</strong></td><td class="n">'+fmt(d[0])+'+</td><td>'+esc(d[3])+'</td></tr>'}).join('')+'</tbody></table><p class="muted small">Os prêmios ficam dentro da alçada do gestor. Promoção e remuneração ficam fora do jogo.</p></div>';
-  s+='<div class="card"><div class="row">'+ICON.goal.replace('<svg','<svg width="44" height="44"')+'<h3>4. Gols</h3></div><p>Os quatro marcos da temporada são jogos decisivos: <strong>6 semanas, 3, 4 e 6 meses</strong>. Cada um vencido vale um gol e <strong>100 pontos</strong>.</p><p class="muted small">O gol só conta depois que o gestor confere a evidência no 1:1.</p></div>';
+  s+='<div class="rules"><div class="card"><div class="row">'+ICON.cup.replace('<svg','<svg width="44" height="44"')+'<h3>3. Divisões</h3></div><table><tbody>'+DIVS.map(function(d,i){return '<tr'+(i===R.di?' class="cur"':'')+'><td><strong>'+d[1]+'</strong></td><td class="n">'+fmt(d[0])+'+</td><td>'+esc(d[3])+'</td></tr>'}).join('')+'</tbody></table><p class="muted small">A divisão mostra em que ponto da temporada você está. Não há prêmios: a recompensa é a evolução registrada.</p></div>';
+  s+='<div class="card"><div class="row">'+ICON.goal.replace('<svg','<svg width="44" height="44"')+'<h3>4. Gols</h3></div><p>Os quatro marcos da temporada são jogos decisivos: <strong>6 semanas, 3, 4 e 6 meses</strong>. Cada um vencido vale um gol e <strong>100 pontos</strong>.</p><p class="muted small">O gol só conta depois que o mentor confere a evidência no 1:1.</p></div>';
   s+='<div class="card"><div class="row">'+ICON.shield.replace('<svg','<svg width="44" height="44"')+'<h3>5. Invicto</h3></div><p>Conta as <strong>semanas seguidas</strong> com a rotina completa. A cada 4 seguidas, ganha <strong>+10 de bônus</strong>.</p><p class="muted small">Sequência quebrada zera o Invicto, mas nunca tira ponto já ganho.</p></div>';
   s+='<div class="card"><div class="row">'+ICON.card.replace('<svg','<svg width="44" height="44"')+'<h3>6. Cartão amarelo</h3></div><p>Vale sempre que alguém precisar <strong>cobrar status</strong> de uma entrega sua. Não tira ponto, mas a meta da temporada é <strong>zero</strong>.</p><p class="muted small">Registre na aba Rotina. Honestidade aqui vale mais que o placar.</p></div></div>';
-  s+='<div class="card"><h3>7. Regulamento</h3><ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">'+['Ponto só entra com evidência: card fechado, documento publicado, certificado ou registro da conversa.','O gestor confere o placar no 1:1. Na dúvida, a jogada não conta até ser conferida.','Dados da empresa não saem dela: nada de dado interno nos posts ou na conversa com o mentor externo.','Campeonato de um jogador só: sem ranking e sem exposição para a equipe.'].map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul></div>';
+  s+='<div class="card"><h3>7. Regulamento</h3><ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">'+['Ponto só entra com evidência: card fechado, documento publicado, certificado ou registro da conversa.','O mentor confere o placar no 1:1. Na dúvida, a jogada não conta até ser conferida.','Dados da empresa não saem dela: nada de dado interno nos posts ou na conversa com o mentor externo.','Campeonato de um jogador só: sem ranking e sem exposição para a equipe.'].map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul></div>';
   s+='<div class="card"><h3>Seus dados</h3><p class="muted">Tudo fica salvo neste navegador'+(canStore?'':' (o armazenamento está bloqueado aqui, então exporte o backup antes de fechar)')+'. Para trocar de computador, exporte o backup e importe no outro.</p><div class="row"><button class="btn" data-a="export">Exportar backup</button><label class="btn" for="imp">Importar backup</label><input type="file" id="imp" accept="application/json,.json" hidden><button class="btn ghost" data-a="guides-all" data-v="1">Ligar todos os guias</button><button class="btn ghost" data-a="guides-all" data-v="0">Desligar todos os guias</button><button class="btn danger" data-a="reset" id="resetbtn">Apagar tudo</button></div><p class="small muted" id="msg" aria-live="polite"></p></div>';
   return s;
 };
@@ -417,7 +419,7 @@ V.campo=function(){
 V.pdi=function(){
   var s=head('pdi','PDI','Seu plano de desenvolvimento, no formato do formulário de PDI. Escreva em primeira pessoa.');
   s+='<div class="card"><h3>Meu objetivo de carreira em 3 anos</h3>'+txt('pdi.objetivo','Objetivo','Ex.: ser analista pleno de Growth, responsável pela mensuração de uma jornada de ponta a ponta.',{area:1})+'</div>';
-  s+='<div class="card"><h3>Como me vejo e como os outros me veem</h3><div class="grid2">'+txt('pdi.vejoHard','Como me vejo: hard skills','O que sei fazer bem tecnicamente',{area:1})+txt('pdi.vejoSoft','Como me vejo: soft skills','Como trabalho com as pessoas',{area:1})+txt('pdi.fortalezas','Fortalezas (feedback do gestor e pares)','',{area:1})+txt('pdi.oportunidades','Oportunidades de desenvolvimento','Escreva como comportamento observável',{area:1})+'</div></div>';
+  s+='<div class="card"><h3>Como me vejo e como os outros me veem</h3><div class="grid2">'+txt('pdi.vejoHard','Como me vejo: hard skills','O que sei fazer bem tecnicamente',{area:1})+txt('pdi.vejoSoft','Como me vejo: soft skills','Como trabalho com as pessoas',{area:1})+txt('pdi.fortalezas','Fortalezas (feedback do mentor e pares)','',{area:1})+txt('pdi.oportunidades','Oportunidades de desenvolvimento','Escreva como comportamento observável',{area:1})+'</div></div>';
   s+='<div class="card"><h3>Momento de carreira</h3>'+txt('pdi.momento','Autoavaliação','Onde estou hoje e o que falta para o próximo nível',{area:1})+'</div>';
   s+='<div class="card"><h3>Os três passos até o objetivo</h3><div class="grid3">'+txt('pdi.passo1','1º passo: 1 a 12 meses','Base: rotina e fundamentos',{area:1})+txt('pdi.passo2','2º passo: 13 a 24 meses','Autonomia',{area:1})+txt('pdi.passo3','3º passo: 25 a 36 meses','Influência',{area:1})+'</div><p class="small muted">Esta temporada de 6 meses é a primeira metade do 1º passo. Os meses 7 a 12 são definidos na revisão do mês 6.</p></div>';
   return s;
@@ -434,8 +436,8 @@ V.rotina=function(){
   return s;
 };
 V.cursos=function(){
-  var sp=secPts(R,'cursos'), s=head('cursos','Cursos e roadmap de estudo','Quatro formações concluídas até o mês 6. Monte o roadmap e apresente ao gestor até a 2ª semana.');
-  s+='<div class="card'+(S.roadmap.feito?' done':'')+'"><div class="spread"><h3>Roadmap de estudo</h3>'+ptsTag(S.roadmap.feito,30)+'</div><div class="grid2">'+txt('roadmap.data','Data da apresentação ao gestor','',{type:'date'})+txt('roadmap.link','Link do roadmap','Documento ou apresentação',{type:'url'})+'</div>'+chk('roadmap.feito','Roadmap apresentado e aprovado pelo gestor')+'</div>';
+  var sp=secPts(R,'cursos'), s=head('cursos','Cursos e roadmap de estudo','Cinco formações concluídas até o mês 6. Monte o roadmap e apresente ao mentor até a 2ª semana.');
+  s+='<div class="card'+(S.roadmap.feito?' done':'')+'"><div class="spread"><h3>Roadmap de estudo</h3>'+ptsTag(S.roadmap.feito,30)+'</div><div class="grid2">'+txt('roadmap.data','Data da apresentação ao mentor','',{type:'date'})+txt('roadmap.link','Link do roadmap','Documento ou apresentação',{type:'url'})+'</div>'+chk('roadmap.feito','Roadmap apresentado e aprovado pelo mentor')+'</div>';
   var horas=S.cursos.reduce(function(a,c){return a+(parseFloat(c.horas)||0)},0);
   s+='<div class="spread"><span class="muted">Total: <strong>'+horas+' h</strong> de estudo por semana</span><span class="pts">'+sp[0]+' / '+sp[1]+' pts</span></div>';
   CURSOS.forEach(function(c,k){var d=S.cursos[k].status==='Concluído';
@@ -453,7 +455,7 @@ V.analises=function(){
   var sp=secPts(R,'analises'), s=head('analises','Análises','Uma análise de fonte de tráfego a cada 20 dias, com dados da empresa, e uma pergunta de negócio por mês respondida em SQL.');
   s+='<div class="spread"><span class="muted">Estrutura fixa: pergunta, dado, achado, "e daí?" e recomendação.</span><span class="pts">'+sp[0]+' / '+sp[1]+' pts</span></div>';
   ANALISES.forEach(function(a,k){var x=S.analises[k];
-    s+='<div class="card'+(x.feita?' done':'')+'"><div class="spread"><div><div class="lbl">'+a[0]+'</div><h3>'+a[1]+'</h3></div>'+ptsTag(x.feita,40)+'</div><p class="small muted">O que analisar: '+esc(a[2])+'</p><div class="grid2">'+txt('analises.'+k+'.pergunta','Pergunta de negócio','Definida com o gestor')+txt('analises.'+k+'.data','Data da apresentação','',{type:'date'})+txt('analises.'+k+'.achado','Principal achado','',{area:1})+txt('analises.'+k+'.recomendacao','"E daí?" e recomendação','',{area:1})+'</div>'+chk('analises.'+k+'.feita','Análise apresentada à squad')+'</div>'});
+    s+='<div class="card'+(x.feita?' done':'')+'"><div class="spread"><div><div class="lbl">'+a[0]+'</div><h3>'+a[1]+'</h3></div>'+ptsTag(x.feita,40)+'</div><p class="small muted">O que analisar: '+esc(a[2])+'</p><div class="grid2">'+txt('analises.'+k+'.pergunta','Pergunta de negócio','Definida com o mentor')+txt('analises.'+k+'.data','Data da apresentação','',{type:'date'})+txt('analises.'+k+'.achado','Principal achado','',{area:1})+txt('analises.'+k+'.recomendacao','"E daí?" e recomendação','',{area:1})+'</div>'+chk('analises.'+k+'.feita','Análise apresentada à squad')+'</div>'});
   s+='<h3 style="margin-top:8px">SQL do mês</h3>';
   s+='<div class="grid2">'+S.sql.map(function(x,k){return '<div class="card'+(x.feito?' done':'')+'"><div class="spread"><h3>Mês '+(k+1)+'</h3>'+ptsTag(x.feito,15)+'</div>'+txt('sql.'+k+'.pergunta','Pergunta','')+txt('sql.'+k+'.resposta','Resposta em uma frase','')+chk('sql.'+k+'.feito','Respondida em SQL e conferida')+'</div>'}).join('')+'</div>';
   return s;
@@ -473,12 +475,12 @@ V.rede=function(){
   s+='<div class="card"><div class="row">'+ICON.whistle.replace('<svg','<svg width="36" height="36"')+'<h3>Roteiro das 4 perguntas (30 minutos)</h3></div><ol style="margin:0;padding-left:20px"><li>O que devo continuar fazendo?</li><li>O que devo começar a fazer?</li><li>O que devo parar de fazer?</li><li>O que você esperaria ver de um analista pleno que ainda não vê em mim?</li></ol></div>';
   s+='<div class="spread"><span class="muted">A conversa conta quando tem data e o que você ouviu.</span><span class="pts">'+sp[0]+' / '+sp[1]+' pts</span></div>';
   s+='<div class="grid2">'+REDE.map(function(r,k){var x=S.rede[k],d=x.data&&x.ouvi.trim();return '<div class="card'+(d?' done':'')+'"><div class="spread"><div><div class="lbl">'+r[1]+'</div><h3>'+r[0]+'</h3></div>'+ptsTag(d,20)+'</div><div class="grid2">'+txt('rede.'+k+'.nome','Nome','')+txt('rede.'+k+'.data','Data da conversa','',{type:'date'})+'</div>'+txt('rede.'+k+'.ouvi','O que ouvi','',{area:1})+'<div class="grid2">'+txt('rede.'+k+'.mudar','O que vou mudar','')+txt('rede.'+k+'.ate','Até quando','',{type:'date'})+'</div></div>'}).join('')+'</div>';
-  s+='<div class="card"><h3>Mentor externo</h3><p class="small muted">Alguém 3 a 5 anos à frente em produto ou analytics, escolhido até a semana 6. Nada de dado da empresa sai da conversa.</p>'+txt('mentor.nome','Nome do mentor','')+'<div class="grid3">'+S.mentor.conversas.map(function(x,k){var d=x.data&&x.ouvi.trim();return '<div style="display:flex;flex-direction:column;gap:8px"><div class="spread"><strong>Conversa '+(k+1)+'</strong>'+ptsTag(d,15)+'</div>'+txt('mentor.conversas.'+k+'.data','Data','',{type:'date'})+txt('mentor.conversas.'+k+'.ouvi','O que ouvi','',{area:1})+'</div>'}).join('')+'</div></div>';
+  s+='<div class="card"><h3>Mentor externo</h3><p class="small muted">Alguém 3 a 5 anos à frente em produto ou analytics, escolhido até a semana 6. Nada de dado da empresa sai da conversa.</p>'+txt('mentor.nome','Nome do mentor externo','')+'<div class="grid3">'+S.mentor.conversas.map(function(x,k){var d=x.data&&x.ouvi.trim();return '<div style="display:flex;flex-direction:column;gap:8px"><div class="spread"><strong>Conversa '+(k+1)+'</strong>'+ptsTag(d,15)+'</div>'+txt('mentor.conversas.'+k+'.data','Data','',{type:'date'})+txt('mentor.conversas.'+k+'.ouvi','O que ouvi','',{area:1})+'</div>'}).join('')+'</div></div>';
   return s;
 };
 V.jogos=function(){
   var s=head('jogos','Jogos decisivos','Os quatro marcos da temporada. Cada jogo vencido vale um gol e 100 pontos.');
-  s+='<div class="grid2">'+MARCOS.map(function(m,k){var x=S.marcos[k];return '<div class="card'+(x.feito?' done':'')+'"><div class="spread"><div><div class="lbl">'+(k+1)+'ª decisão</div><h3>'+m[0]+'</h3></div>'+ptsTag(x.feito,100)+'</div><p>'+esc(m[1])+'</p>'+txt('marcos.'+k+'.evidencia','Evidência','Links ou resumo do que foi entregue',{area:1})+chk('marcos.'+k+'.feito','Gol marcado (conferido com o gestor)')+'</div>'}).join('')+'</div>';
+  s+='<div class="grid2">'+MARCOS.map(function(m,k){var x=S.marcos[k];return '<div class="card'+(x.feito?' done':'')+'"><div class="spread"><div><div class="lbl">'+(k+1)+'ª decisão</div><h3>'+m[0]+'</h3></div>'+ptsTag(x.feito,100)+'</div><p>'+esc(m[1])+'</p>'+txt('marcos.'+k+'.evidencia','Evidência','Links ou resumo do que foi entregue',{area:1})+chk('marcos.'+k+'.feito','Gol marcado (conferido com o mentor)')+'</div>'}).join('')+'</div>';
   return s;
 };
 
