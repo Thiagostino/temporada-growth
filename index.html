@@ -159,6 +159,22 @@ tr.cur td{background:#E3EEDF;font-weight:600}
   .guide{grid-template-columns:1fr}.guide svg{display:none}
   .hide-mobile{display:none}
 }
+.syncpill{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#B9C8BD;white-space:nowrap}
+.syncpill i{width:8px;height:8px;border-radius:50%;background:#7d8c82}
+.syncpill.ok i{background:#5BD38A}.syncpill.err i{background:var(--gold)}
+.purpose{background:#fff;border:1px solid #F0D58C;border-radius:10px;padding:10px 12px;grid-column:1/-1}
+.purpose b{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.ex{grid-column:1/-1;background:#fff;border:1px dashed #D9B75A;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.ex .tag{align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--gold);color:var(--ink);border-radius:10px;padding:2px 9px}
+.exrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start;border-top:1px solid var(--line);padding-top:10px}
+.exrow:first-of-type{border-top:0;padding-top:0}
+.exval{background:#F8FAF6;border:1px solid var(--line);border-radius:8px;padding:8px 10px;white-space:pre-wrap}
+.exwhy{font-size:13px;color:var(--muted);display:flex;gap:8px}
+.exwhy::before{content:"✓";color:var(--grass);font-weight:700}
+.extabs{display:flex;gap:6px;flex-wrap:wrap}
+.extabs button{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:5px 12px;font-weight:600;font-size:13px;cursor:pointer}
+.extabs button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+@media (max-width:640px){.exrow{grid-template-columns:1fr}}
 @media print{.top,.guide,.switch{display:none}}
 </style>
 </head>
@@ -246,10 +262,43 @@ function DEF(){return {v:2,perfil:{nome:'',gestor:'',inicio:''},
 function merge(d,s){if(Array.isArray(d)){return d.map(function(x,i){return (s&&s[i]!==undefined)?merge(x,s[i]):x}).concat(Array.isArray(s)&&d.length===0?s:[])}
  if(d&&typeof d==='object'){var o={};Object.keys(d).forEach(function(k){o[k]=(s&&s[k]!==undefined)?merge(d[k],s[k]):d[k]});if(s&&typeof s==='object')Object.keys(s).forEach(function(k){if(!(k in o))o[k]=s[k]});return o}
  return (s===undefined||s===null||typeof s!==typeof d)?d:s}
+var SYNC_URL_DEFAULT='';
 var S=DEF(), canStore=true;
+var SY={url:'',key:'',status:'off',last:'',msg:''};
+try{var sy=JSON.parse(localStorage.getItem(KEY+'-sync')||'{}'); SY.url=sy.url||SYNC_URL_DEFAULT; SY.key=sy.key||''}catch(e){SY.url=SYNC_URL_DEFAULT}
+function saveSync(){try{localStorage.setItem(KEY+'-sync',JSON.stringify({url:SY.url,key:SY.key}))}catch(e){}}
 try{var raw=localStorage.getItem(KEY); if(raw){var o=JSON.parse(raw); if(o&&o.v===2) S=merge(DEF(),o)}}catch(e){canStore=false}
 if(location.hash){var h=location.hash.slice(1); if(SECS.some(function(s){return s[0]===h})) S.sec=h}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){canStore=false}}
+function save(touch){if(touch===true) S.atualizado=new Date().toISOString(); try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){canStore=false} if(touch===true) schedulePush()}
+var pushT;
+function schedulePush(){if(!SY.url||!SY.key) return; clearTimeout(pushT); pushT=setTimeout(push,2500)}
+function yn(v){return v?'Sim':''}
+function tables(){var R0=calc(),T={};
+  T['Placar']=[['Camisa','Jogada','Pontos por vez','Feitas','Máximo','Pontos']].concat(MS.map(function(m){return [m[1]||'Gol',m[2],m[3],R0.c[m[0]],m[4],R0.c[m[0]]*m[3]]})).concat([['','Total','','','',R0.tot]]);
+  var P=S.pdi; T['PDI']=[['Campo','Texto'],['Jogador',S.perfil.nome],['Mentor',S.perfil.gestor],['Início da temporada',S.perfil.inicio],['Objetivo de 3 anos',P.objetivo],['Como me vejo: hard skills',P.vejoHard],['Como me vejo: soft skills',P.vejoSoft],['Fortalezas',P.fortalezas],['Oportunidades',P.oportunidades],['Momento de carreira',P.momento],['1º passo',P.passo1],['2º passo',P.passo2],['3º passo',P.passo3]];
+  T['Rotina']=[['Semana','A partir de'].concat(RITOS.map(function(r){return r[1]})).concat(['Completa'])].concat(S.rotina.semanas.map(function(w,i){return [i+1,dateLbl(i)].concat(RITOS.map(function(r){return yn(w[r[0]])})).concat([yn(weekDone(w))])}));
+  T['Cartões']=[['Data','O que foi cobrado']].concat(S.cartoes.map(function(c){return [c.data,c.motivo]}));
+  T['Cursos']=[['Formação','Referência','Início','Conclusão','Horas por semana','Status','Onde vou aplicar'],['Roadmap de estudo','Até a 2ª semana',S.roadmap.data,'','',S.roadmap.feito?'Apresentado':'Pendente',S.roadmap.link]].concat(CURSOS.map(function(c,k){var x=S.cursos[k];return [c.nome,c.ref,x.inicio,x.fim,x.horas,x.status,x.aplicar]}));
+  T['Agenda']=[['Mês','Público','Apresentação','Feita','Ponto forte e ajuste','Post','Publicado','Link do post']].concat(S.agenda.map(function(a,k){return [k+1,PUBLICO[k],a.apTema,yn(a.apFeita),a.apAjuste,a.postTema,yn(a.postFeito),a.postLink]}));
+  T['Análises']=[['Prazo','Tema','Pergunta de negócio','Data','Achado','"E daí?" e recomendação','Apresentada']].concat(ANALISES.map(function(a,k){var x=S.analises[k];return [a[0],a[1],x.pergunta,x.data,x.achado,x.recomendacao,yn(x.feita)]})).concat([['','SQL do mês','Pergunta','','Resposta','','Feito']]).concat(S.sql.map(function(x,k){return ['Mês '+(k+1),'SQL do mês',x.pergunta,'',x.resposta,'',yn(x.feito)]}));
+  var E=S.entregas; T['Entregas']=[['Entrega','Detalhe','Link ou registro','Concluída'],['Plano de mensuração','',E.plano.link,yn(E.plano.feito)],['Tags validadas em homologação','',E.tags.link,yn(E.tags.feito)],['Dashboard em uso pela squad','',E.dash.link,yn(E.dash.feito)],['One-pager de oportunidade','',E.onep.link,yn(E.onep.feito)]].concat(E.entr.map(function(x,k){return ['Entrevista ou teste '+(k+1),x.quando,x.aprend,yn(x.feito)]})).concat(E.edai.map(function(x,k){return ['"E daí?" '+(k+1),x.dash,x.linha,yn(x.feito)]}));
+  T['Feedback']=[['Quem','Nome','Janela','Data','O que ouvi','O que vou mudar','Até quando']].concat(REDE.map(function(r,k){var x=S.rede[k];return [r[0],x.nome,r[1],x.data,x.ouvi,x.mudar,x.ate]})).concat(S.mentor.conversas.map(function(x,k){return ['Mentor externo, conversa '+(k+1),S.mentor.nome,'',x.data,x.ouvi,'','']}));
+  T['Jogos']=[['Jogo','Critério','Evidência','Gol']].concat(MARCOS.map(function(m,k){var x=S.marcos[k];return [m[0],m[1],x.evidencia,yn(x.feito)]}));
+  var jog={}; PLAYERS.slice().sort(function(a,b){return a.n-b.n}).forEach(function(p){jog[p.n+' '+p.name]=pXP(R0,p.n)});
+  var d=new Date(), ds=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+  return {tabelas:T,resumo:{data:ds,pontos:R0.tot,divisao:DIVS[R0.di][1],gols:R0.gols,invicto:R0.inv,cartoes:R0.cards,jogadores:jog}}}
+function setSync(st,m){SY.status=st;SY.msg=m||'';var el=document.getElementById('syncpill');if(el){el.className='syncpill '+(st==='ok'?'ok':st==='err'?'err':'');el.querySelector('span').textContent=syncLabel()}var mm=document.getElementById('syncmsg');if(mm)mm.textContent=SY.msg}
+function syncLabel(){if(!SY.url||!SY.key)return 'Só neste navegador';if(SY.status==='ok')return 'Planilha: salvo '+SY.last;if(SY.status==='busy')return 'Salvando na planilha…';if(SY.status==='err')return 'Planilha: não salvou';return 'Planilha conectada'}
+function push(){if(!SY.url||!SY.key)return Promise.resolve(false);var x=tables();setSync('busy');
+  return fetch(SY.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:SY.key,state:S,tabelas:x.tabelas,resumo:x.resumo})})
+   .then(function(r){return r.json()}).then(function(j){if(j&&j.ok){var d=new Date();SY.last=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);setSync('ok','Tudo salvo na planilha às '+SY.last+'.');return true}
+     setSync('err',j&&j.erro==='codigo'?'O código da temporada não confere. Peça o código ao mentor.':'A planilha recusou o envio. Os dados continuam salvos neste navegador.');return false})
+   .catch(function(){setSync('err','Sem conexão com a planilha agora. Os dados continuam salvos neste navegador e serão enviados na próxima alteração.');return false})}
+function pull(){if(!SY.url||!SY.key)return Promise.resolve(false);setSync('busy');
+  return fetch(SY.url+(SY.url.indexOf('?')>-1?'&':'?')+'action=load&key='+encodeURIComponent(SY.key)).then(function(r){return r.json()}).then(function(j){
+    if(!j||!j.ok){setSync('err',j&&j.erro==='codigo'?'O código da temporada não confere. Peça o código ao mentor.':'Não foi possível ler a planilha.');return false}
+    if(j.state&&j.state.v===2&&(!S.atualizado||(j.state.atualizado||'')>S.atualizado)){var sec=S.sec;S=merge(DEF(),j.state);S.sec=sec;save(false);var d0=new Date();SY.last=('0'+d0.getHours()).slice(-2)+':'+('0'+d0.getMinutes()).slice(-2);SY.status='ok';render();setSync('ok','Registros carregados da planilha.');return true}
+    return push()}).catch(function(){setSync('err','Não foi possível falar com a planilha. Confira o endereço do servidor.');return false})}
 function get(p){return p.split('.').reduce(function(o,k){return o==null?o:o[k]},S)}
 function set(p,v){var ks=p.split('.'),o=S;for(var i=0;i<ks.length-1;i++)o=o[ks[i]];o[ks[ks.length-1]]=v}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
@@ -371,6 +420,37 @@ var GUIDES={
  entregas:['form','Mensuração e produto',['Cole o link da evidência (documento, dashboard, ticket) antes de marcar.','Cada entrega marcada soma pontos para as camisas 8 e 10.','Em dúvida se conta? Leve para o 1:1 e decida com o mentor.']],
  rede:['people','Rede de feedback',['Use o roteiro das 4 perguntas em todas as conversas.','A conversa conta quando tem data e o que você ouviu registrado.','Traga o registro para o 1:1 seguinte.']],
  jogos:['goal','Jogos decisivos',['São os quatro marcos da temporada. Cada um vencido vale um gol e 100 pontos.','Registre a evidência e marque o gol só depois de conferir com o mentor.','Os jogos seguem a ordem: 6 semanas, 3, 4 e 6 meses.']]};
+var EX={
+ inicio:{para:'Identifica o jogador e o mentor e marca o dia 1 da temporada. A data de início numera as 24 semanas da Rotina e o código da temporada liga o programa à planilha do mentor.',
+  casos:[['Cadastro',[['Seu nome','Gabriel','Aparece no topo do Campo.'],['Mentor','Thiago','Quem confere o placar no 1:1.'],['Início da temporada','01/12/2026','Sempre uma segunda-feira: a semana 1 começa nela.'],['Código da temporada','tg-xxxxxxxx','Quem recebe o código é o mentor. Com ele, cada registro vai sozinho para a planilha.']]]]},
+ campo:{para:'É o placar. Não se preenche nada aqui: o Campo lê tudo o que foi registrado nas outras abas e mostra onde a temporada está.',
+  casos:[['Como ler',[['Pontos 280 / 1.875','15% da temporada','Soma automática de todas as jogadas registradas.'],['Divisão Profissional','faltam 320 para Titular','Mostra a próxima meta em pontos.'],['Camisa 1 com anel quase cheio','Rotina em dia','O anel dourado é o quanto aquela frente já entregou.']]]]},
+ pdi:{para:'É o mapa da temporada. Não vale pontos, mas orienta as outras abas: o objetivo diz para onde ir e as oportunidades dizem o que treinar.',
+  casos:[['Objetivo',[['Objetivo de 3 anos','Ser analista pleno de Growth, dono da mensuração de uma jornada de ponta a ponta e capaz de transformar dados em recomendação para o backlog.','Tem cargo, escopo e o tipo de entrega: dá para saber quando chegou.']]],
+   ['Oportunidades',[['Oportunidade de desenvolvimento','Organização: planejar a semana na segunda, manter o board em dia e avisar risco de prazo antes do vencimento.','Escrito como comportamento observável, não como traço ("ser mais organizado").']]]]},
+ rotina:{para:'Cria o hábito que sustenta todo o resto. Cada semana com os 5 ritos obrigatórios vira 5 pontos, e semanas seguidas formam o Invicto.',
+  casos:[['Semana completa',[['Planejamento de segunda','Marcado: 3 prioridades enviadas ao mentor às 9h40','Marque só quando aconteceu de verdade.'],['Resultados dos projetos','Sem marcar nesta semana','É quinzenal: não impede a semana de ficar completa.']]],
+   ['Cartão amarelo',[['Data','14/01/2027',''],['O que foi cobrado','PM pediu status do dashboard de CRM que estava atrasado','Registro honesto e específico: serve para entender o padrão, não para punir.']]]]},
+ cursos:{para:'Transforma estudo em plano com datas. O roadmap mostra ao mentor quanto tempo vai para cada formação e onde ela vai ser aplicada.',
+  casos:[['Curso de SQL',[['Início e conclusão','01/12/2026 a 31/01/2027','Dentro da referência de meses 1 a 2.'],['Horas por semana','4','Some as horas de todos os cursos: acima de 8 por semana costuma não caber.'],['Onde vou aplicar','Pergunta de negócio do mês e base do funil de conversão','Liga o curso a uma entrega real.'],['Status','Concluído (com certificado)','Só mude para Concluído com o certificado em mãos.']]]]},
+ agenda:{para:'Treina comunicação para dentro e para fora: uma apresentação interna e um post por mês, com público que cresce ao longo da temporada.',
+  casos:[['Mês 2',[['Apresentação: tema','Como montei o plano de mensuração do onboarding','Tema concreto, ligado a algo que você fez.'],['Ponto forte e ajuste','Forte: exemplos claros. Ajuste: começar pela recomendação, não pelo método.','Registre a frase como ouviu.'],['Post: tema','3 erros comuns ao nomear eventos de analytics','Aprendizado geral, sem dado nem nome interno.']]]]},
+ analises:{para:'Ensina a ler cada fonte de tráfego. Toda análise segue a mesma estrutura: pergunta, dado, achado, "e daí?" e recomendação.',
+  casos:[['Funil de conversão',[['Pergunta de negócio','Em qual etapa do funil de abertura de conta perdemos mais pessoas no celular?','Uma pergunta só, que leva a uma decisão.'],['Principal achado','A maior perda está no envio de documento: no celular, quase o dobro do abandono do desktop (números fictícios).','Compara grupos e aponta a etapa.'],['"E daí?" e recomendação','Testar captura do documento pela câmera e medir o abandono por 2 semanas.','Termina em uma ação testável.']]],
+   ['SQL do mês',[['Pergunta','Quantos usuários voltaram ao app em até 7 dias após o primeiro acesso?',''],['Resposta em uma frase','Cerca de 4 em cada 10 voltaram em até 7 dias (exemplo fictício).','Resposta curta, com o recorte de tempo.']]]]},
+ entregas:{para:'Registra as entregas práticas de mensuração e de produto, cada uma com o link da evidência para o mentor conferir.',
+  casos:[['Mensuração',[['Plano de mensuração: link','Link do documento no repositório da squad','Sem link, a jogada não conta.']]],
+   ['"E daí?"',[['Dashboard','Funil de onboarding',''],['A decisão que ele sugere','Priorizar a etapa de documento no próximo sprint.','Uma frase que diz o que fazer com o número.']]]]},
+ rede:{para:'Constrói a rede que dá feedback fora do dia a dia. Cada conversa registrada vira um plano de mudança com prazo.',
+  casos:[['Conversa com coordenação',[['O que ouvi','Explico bem o dado, mas não digo o que fazer com ele.','Escreva como ouviu, sem se defender.'],['O que vou mudar','Fechar toda análise com uma recomendação.','Uma mudança só, observável.'],['Até quando','28/02/2027','Prazo para revisar no 1:1.']]]]},
+ jogos:{para:'São os quatro marcos da temporada. Cada um vencido vale um gol e 100 pontos, e só conta depois que o mentor confere a evidência.',
+  casos:[['Jogo das 6 semanas',[['Evidência','6 semanas completas na Rotina, roadmap aprovado em 10/12 e primeira conversa com o mentor externo em 05/01.','Lista o que prova cada critério do jogo.']]]]}};
+var exOpen={}, exTab={};
+function exHTML(sec){var e=EX[sec]; if(!e) return ''; var k=exTab[sec]||0, c=e.casos[k];
+  var s='<div class="ex"><span class="tag">Exemplo de preenchimento</span>';
+  if(e.casos.length>1) s+='<div class="extabs">'+e.casos.map(function(x,i){return '<button data-a="extab" data-s="'+sec+'" data-i="'+i+'" aria-pressed="'+(i===k)+'">'+esc(x[0])+'</button>'}).join('')+'</div>';
+  c[1].forEach(function(r){s+='<div class="exrow"><div class="field"><span class="lbl">'+esc(r[0])+'</span><div class="exval">'+esc(r[1])+'</div></div>'+(r[2]?'<p class="exwhy">'+esc(r[2])+'</p>':'<span></span>')+'</div>'});
+  return s+'</div>'}
 var WELCOME=[
  ['ball','Bem-vindo à Temporada de Growth','São 6 meses para virar analista de Growth. Cada coisa que você faz no trabalho vira uma jogada que rende pontos.'],
  ['form','Registre o que fez','Cada aba tem um formulário simples. Marcou como feito, com evidência, o ponto entra sozinho no placar.'],
@@ -379,7 +459,8 @@ var WELCOME=[
 function guideOn(sec){return S.guias[sec]!==false}
 function head(sec,title,lead){var on=guideOn(sec),g=GUIDES[sec];
   var s='<div class="sec-head"><div><h2>'+title+'</h2>'+(lead?'<p class="lead">'+lead+'</p>':'')+'</div><button class="switch" role="switch" aria-checked="'+on+'" data-a="guide" data-s="'+sec+'" id="sw_'+sec+'"><i></i>Guia</button></div>';
-  if(on&&g) s+='<div class="guide">'+ICON[g[0]]+'<h3>'+g[1]+'</h3><ol>'+g[2].map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ol><div class="row"><button class="btn ghost" data-a="guide" data-s="'+sec+'">Entendi, esconder guia</button></div></div>';
+  if(on&&g){var eo=!!exOpen[sec];
+    s+='<div class="guide">'+ICON[g[0]]+'<h3>'+g[1]+'</h3>'+(EX[sec]?'<div class="purpose"><b>Para que serve</b>'+esc(EX[sec].para)+'</div>':'')+'<ol>'+g[2].map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ol>'+(eo?exHTML(sec):'')+'<div class="row">'+(EX[sec]?'<button class="btn" data-a="ex" data-s="'+sec+'" aria-expanded="'+eo+'" id="exb_'+sec+'">'+(eo?'Esconder exemplo':'Ver exemplo de preenchimento')+'</button>':'')+'<button class="btn ghost" data-a="guide" data-s="'+sec+'">Entendi, esconder guia</button></div></div>';}
   return s}
 var wStep=0, showWelcome=!S.boasVindas;
 function welcome(){var w=WELCOME[wStep],last=wStep===WELCOME.length-1;
@@ -401,7 +482,11 @@ V.inicio=function(){
   s+='<div class="card"><div class="row">'+ICON.shield.replace('<svg','<svg width="44" height="44"')+'<h3>5. Invicto</h3></div><p>Conta as <strong>semanas seguidas</strong> com a rotina completa. A cada 4 seguidas, ganha <strong>+10 de bônus</strong>.</p><p class="muted small">Sequência quebrada zera o Invicto, mas nunca tira ponto já ganho.</p></div>';
   s+='<div class="card"><div class="row">'+ICON.card.replace('<svg','<svg width="44" height="44"')+'<h3>6. Cartão amarelo</h3></div><p>Vale sempre que alguém precisar <strong>cobrar status</strong> de uma entrega sua. Não tira ponto, mas a meta da temporada é <strong>zero</strong>.</p><p class="muted small">Registre na aba Rotina. Honestidade aqui vale mais que o placar.</p></div></div>';
   s+='<div class="card"><h3>7. Regulamento</h3><ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">'+['Ponto só entra com evidência: card fechado, documento publicado, certificado ou registro da conversa.','O mentor confere o placar no 1:1. Na dúvida, a jogada não conta até ser conferida.','Dados da empresa não saem dela: nada de dado interno nos posts ou na conversa com o mentor externo.','Campeonato de um jogador só: sem ranking e sem exposição para a equipe.'].map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul></div>';
-  s+='<div class="card"><h3>Seus dados</h3><p class="muted">Tudo fica salvo neste navegador'+(canStore?'':' (o armazenamento está bloqueado aqui, então exporte o backup antes de fechar)')+'. Para trocar de computador, exporte o backup e importe no outro.</p><div class="row"><button class="btn" data-a="export">Exportar backup</button><label class="btn" for="imp">Importar backup</label><input type="file" id="imp" accept="application/json,.json" hidden><button class="btn ghost" data-a="guides-all" data-v="1">Ligar todos os guias</button><button class="btn ghost" data-a="guides-all" data-v="0">Desligar todos os guias</button><button class="btn danger" data-a="reset" id="resetbtn">Apagar tudo</button></div><p class="small muted" id="msg" aria-live="polite"></p></div>';
+  s+='<div class="card"><h3>Onde ficam os registros</h3><p class="muted">Tudo é salvo neste navegador'+(canStore?'':' (o armazenamento está bloqueado aqui, então exporte o backup antes de fechar)')+'. Com o código da temporada, cada alteração também vai para a planilha do mentor, que guarda o histórico e a evolução semana a semana. Em outro aparelho, basta conectar com o mesmo código para recuperar tudo.</p>'+
+   '<div class="grid2"><div class="field"><label for="sy_url">Endereço do servidor (fornecido pelo mentor)</label><input type="url" id="sy_url" data-sy="url" value="'+esc(SY.url)+'" placeholder="https://script.google.com/macros/s/…/exec"></div><div class="field"><label for="sy_key">Código da temporada</label><input type="text" id="sy_key" data-sy="key" value="'+esc(SY.key)+'" placeholder="tg-…" autocomplete="off"></div></div>'+
+   '<div class="row"><button class="btn primary" data-a="sync">Conectar e sincronizar</button><button class="btn ghost" data-a="unsync">Desconectar</button></div><p class="small muted" id="syncmsg" aria-live="polite">'+esc(SY.msg||(SY.url&&SY.key?'Conectado à planilha.':'Ainda não conectado: os dados ficam só neste navegador.'))+'</p>'+
+   '<p class="small muted">Não registre dados internos da empresa (números, prints, nomes de clientes). Escreva achados em termos gerais.</p>'+
+   '<div class="row"><button class="btn" data-a="export">Exportar backup</button><label class="btn" for="imp">Importar backup</label><input type="file" id="imp" accept="application/json,.json" hidden><button class="btn ghost" data-a="guides-all" data-v="1">Ligar todos os guias</button><button class="btn ghost" data-a="guides-all" data-v="0">Desligar todos os guias</button><button class="btn danger" data-a="reset" id="resetbtn">Apagar tudo</button></div><p class="small muted" id="msg" aria-live="polite"></p></div>';
   return s;
 };
 V.campo=function(){
@@ -489,7 +574,7 @@ var app=document.getElementById('app');
 function render(){
   var keep=document.activeElement&&document.activeElement.id;
   R=calc();
-  var cur=S.sec, s='<header class="top"><div class="top-in"><div class="brand"><h1>Temporada de <span>Growth</span></h1><div class="mini"><span><b>'+fmt(R.tot)+'</b> <small>pts</small></span><span class="hide-s"><small>Divisão</small> <strong>'+DIVS[R.di][1]+'</strong></span></div></div><nav class="tabs" aria-label="Seções">';
+  var cur=S.sec, s='<header class="top"><div class="top-in"><div class="brand"><h1>Temporada de <span>Growth</span></h1><div class="mini"><span><b>'+fmt(R.tot)+'</b> <small>pts</small></span><span class="hide-s"><small>Divisão</small> <strong>'+DIVS[R.di][1]+'</strong></span><span class="syncpill hide-s '+(SY.status==='ok'?'ok':SY.status==='err'?'err':'')+'" id="syncpill"><i></i><span>'+syncLabel()+'</span></span></div></div><nav class="tabs" aria-label="Seções">';
   SECS.forEach(function(x){var sp=secPts(R,x[0]);s+='<button data-a="go" data-s="'+x[0]+'" id="nav_'+x[0]+'"'+(x[0]===cur?' aria-current="page"':'')+'>'+x[1]+(sp[1]?'<span class="pip">'+sp[0]+'</span>':'')+'</button>'});
   s+='</nav></div></header><main id="main">'+V[cur]()+'</main>';
   if(showWelcome) s+=welcome();
@@ -503,22 +588,26 @@ function layout(){document.documentElement.classList.toggle('m',mq.matches)}
 var st=document.createElement('style'); st.textContent='.only-mobile{display:none}html.m .only-mobile{display:block}html.m .pitchwrap .hide-mobile{display:none}'; document.head.appendChild(st);
 layout(); if(mq.addEventListener) mq.addEventListener('change',layout);
 
-function go(sec){S.sec=sec; save(); try{history.replaceState(null,'','#'+sec)}catch(e){} render(); window.scrollTo(0,0)}
+function go(sec){S.sec=sec; save(false); try{history.replaceState(null,'','#'+sec)}catch(e){} render(); window.scrollTo(0,0)}
 var resetArm=0;
 app.addEventListener('click',function(e){
   var t=e.target.closest('[data-a]'); if(!t||t.disabled) return; var a=t.getAttribute('data-a');
   if(a==='go') return go(t.getAttribute('data-s'));
-  if(a==='player'){S.campoSel=+t.getAttribute('data-n'); save(); return render()}
+  if(a==='player'){S.campoSel=+t.getAttribute('data-n'); save(false); return render()}
   if(a==='guide'){var sc=t.getAttribute('data-s'); S.guias[sc]=!guideOn(sc); save(); render(); var sw=document.getElementById('sw_'+sc); if(sw) sw.focus({preventScroll:true}); return}
   if(a==='guides-all'){var on=t.getAttribute('data-v')==='1'; SECS.forEach(function(x){S.guias[x[0]]=on}); save(); return render()}
-  if(a==='week'){S.rotina.sel=+t.getAttribute('data-i'); save(); return render()}
-  if(a==='cadd'){S.cartoes.push({data:new Date().toISOString().slice(0,10),motivo:''}); save(); return render()}
-  if(a==='cdel'){S.cartoes.splice(+t.getAttribute('data-i'),1); save(); return render()}
+  if(a==='ex'){var sx=t.getAttribute('data-s');exOpen[sx]=!exOpen[sx];render();var eb=document.getElementById('exb_'+sx);if(eb)eb.focus({preventScroll:true});return}
+  if(a==='extab'){exTab[t.getAttribute('data-s')]=+t.getAttribute('data-i');return render()}
+  if(a==='week'){S.rotina.sel=+t.getAttribute('data-i'); save(false); return render()}
+  if(a==='cadd'){S.cartoes.push({data:new Date().toISOString().slice(0,10),motivo:''}); save(true); return render()}
+  if(a==='cdel'){S.cartoes.splice(+t.getAttribute('data-i'),1); save(true); return render()}
   if(a==='wnext'){wStep++; return render()} if(a==='wprev'){wStep--; return render()}
   if(a==='wskip'||a==='wend'){showWelcome=false; S.boasVindas=true; save(); return render()}
   if(a==='wopen'){wStep=0; showWelcome=true; return render()}
+  if(a==='sync'){var u=(document.getElementById('sy_url')||{}).value||'',k=(document.getElementById('sy_key')||{}).value||'';SY.url=u.trim();SY.key=k.trim();saveSync();if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(SY.url)){setSync('err','O endereço precisa começar com https://script.google.com/');return}if(!SY.key){setSync('err','Informe o código da temporada.');return}pull();return}
+  if(a==='unsync'){SY.key='';SY.status='off';saveSync();setSync('off','Desconectado. Os dados continuam neste navegador.');var kk=document.getElementById('sy_key');if(kk)kk.value='';return}
   if(a==='export'){var blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'}),u=URL.createObjectURL(blob),l=document.createElement('a');l.href=u;l.download='temporada-growth-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(function(){URL.revokeObjectURL(u)},2000);msg('Backup gerado. Guarde o arquivo em um lugar seguro.');return}
-  if(a==='reset'){if(Date.now()-resetArm<5000){S=DEF();S.boasVindas=true;save();resetArm=0;render();msg('Tudo apagado. A temporada recomeçou do zero.');return}resetArm=Date.now();t.textContent='Toque de novo para confirmar';setTimeout(function(){var b=document.getElementById('resetbtn');if(b)b.textContent='Apagar tudo'},5000);return}
+  if(a==='reset'){if(Date.now()-resetArm<5000){S=DEF();S.boasVindas=true;save(true);resetArm=0;render();msg('Tudo apagado. A temporada recomeçou do zero.');return}resetArm=Date.now();t.textContent='Toque de novo para confirmar';setTimeout(function(){var b=document.getElementById('resetbtn');if(b)b.textContent='Apagar tudo'},5000);return}
 });
 app.addEventListener('keydown',function(e){
   if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('tok')){e.preventDefault();S.campoSel=+e.target.getAttribute('data-n');save();render()}
@@ -528,15 +617,16 @@ function msg(t){var m=document.getElementById('msg'); if(m) m.textContent=t}
 function refreshLight(){R=calc(); var b=app.querySelector('.mini b'); if(b) b.textContent=fmt(R.tot);
   SECS.forEach(function(x){var n=document.querySelector('#nav_'+x[0]+' .pip'); if(n) n.textContent=secPts(R,x[0])[0]})}
 var tmr;
-app.addEventListener('input',function(e){var t=e.target,p=t.getAttribute&&t.getAttribute('data-p'); if(!p||t.type==='checkbox'||t.tagName==='SELECT') return;
-  set(p,t.value); clearTimeout(tmr); tmr=setTimeout(save,250); refreshLight()});
+app.addEventListener('input',function(e){var t=e.target,p=t.getAttribute&&t.getAttribute('data-p');if(t.getAttribute&&t.getAttribute('data-sy'))return; if(!p||t.type==='checkbox'||t.tagName==='SELECT') return;
+  set(p,t.value); clearTimeout(tmr); tmr=setTimeout(function(){save(true)},250); refreshLight()});
 app.addEventListener('change',function(e){var t=e.target;
-  if(t.id==='imp'&&t.files&&t.files[0]){var rd=new FileReader();rd.onload=function(){try{var o=JSON.parse(rd.result);if(!o||o.v!==2)throw 0;S=merge(DEF(),o);S.sec='inicio';save();render();msg('Backup importado.')}catch(x){msg('Este arquivo não é um backup da Temporada de Growth.')}};rd.readAsText(t.files[0]);return}
+  if(t.id==='imp'&&t.files&&t.files[0]){var rd=new FileReader();rd.onload=function(){try{var o=JSON.parse(rd.result);if(!o||o.v!==2)throw 0;S=merge(DEF(),o);S.sec='inicio';save(true);render();msg('Backup importado.')}catch(x){msg('Este arquivo não é um backup da Temporada de Growth.')}};rd.readAsText(t.files[0]);return}
   var p=t.getAttribute&&t.getAttribute('data-p'); if(!p) return;
-  set(p,t.type==='checkbox'?t.checked:t.value); save();
+  set(p,t.type==='checkbox'?t.checked:t.value); save(true);
   if(t.type==='checkbox'||t.tagName==='SELECT') render(); else refreshLight()});
 window.addEventListener('hashchange',function(){var h=location.hash.slice(1); if(h&&h!==S.sec&&V[h]){S.sec=h;render()}});
 render();
+if(SY.url&&SY.key) pull();
 })();
 </script>
 </body>
