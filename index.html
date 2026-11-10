@@ -208,7 +208,7 @@ var RITOS=[
  ['and','Andamento dos projetos','Quarta: o que avançou, o que travou, quem acionar',true],
  ['sexta','Resumo de sexta','Feito, não feito e por quê, andamento, resultados e plano',true],
  ['pmo','Reporte de PMO','Antes de cada rito de PMO: status, riscos e próximos passos',false],
- ['res','Resultados dos projetos','A cada 15 dias ou após release: indicador, meta e "e daí?"',false]];
+ ['res','Resultados dos projetos','A cada 15 dias ou após release: indicador, meta e So What',false]];
 var REQ=RITOS.filter(function(r){return r[3]}).map(function(r){return r[0]});
 var DIVS=[[0,'Base','Defesa','Começando a temporada: rotina e fundamentos'],[250,'Profissional','Meio-campo','Rotina firme e primeiras análises entregues'],[600,'Titular','Ataque','Entrega com autonomia e apresenta para fora da squad'],[1000,'Craque','Grande área','Temporada fechada com evidências em todas as frentes']];
 /* id, camisa, jogada, pontos, máximo, seção onde registrar */
@@ -230,7 +230,7 @@ var MS=[
  ['fb',9,'Conversa de feedback registrada',20,7,'rede'],
  ['ment',9,'Conversa com o mentor externo',15,3,'rede'],
  ['entr',10,'Entrevista ou teste com cliente observado',15,2,'entregas'],
- ['edai',10,'Linha de "e daí?" em um dashboard entregue',10,3,'entregas'],
+ ['edai',10,'Linha de So What em um dashboard entregue',10,3,'entregas'],
  ['onep',10,'One-pager de oportunidade apresentado',50,1,'entregas'],
  ['apres',11,'Apresentação interna do mês',25,6,'agenda'],
  ['gol',0,'Jogo decisivo vencido (gol)',100,4,'jogos']];
@@ -281,8 +281,8 @@ function tables(){var R0=calc(),T={};
   T['Cartões']=[['Data','O que foi cobrado']].concat(S.cartoes.map(function(c){return [c.data,c.motivo]}));
   T['Cursos']=[['Formação','Referência','Início','Conclusão','Horas por semana','Status','Onde vou aplicar'],['Roadmap de estudo','Até a 2ª semana',S.roadmap.data,'','',S.roadmap.feito?'Apresentado':'Pendente',S.roadmap.link]].concat(CURSOS.map(function(c,k){var x=S.cursos[k];return [c.nome,c.ref,x.inicio,x.fim,x.horas,x.status,x.aplicar]}));
   T['Agenda']=[['Mês','Público','Apresentação','Feita','Ponto forte e ajuste','Post','Publicado','Link do post']].concat(S.agenda.map(function(a,k){return [k+1,PUBLICO[k],a.apTema,yn(a.apFeita),a.apAjuste,a.postTema,yn(a.postFeito),a.postLink]}));
-  T['Análises']=[['Prazo','Tema','Pergunta de negócio','Data','Achado','"E daí?" e recomendação','Apresentada']].concat(ANALISES.map(function(a,k){var x=S.analises[k];return [a[0],a[1],x.pergunta,x.data,x.achado,x.recomendacao,yn(x.feita)]})).concat([['','SQL do mês','Pergunta','','Resposta','','Feito']]).concat(S.sql.map(function(x,k){return ['Mês '+(k+1),'SQL do mês',x.pergunta,'',x.resposta,'',yn(x.feito)]}));
-  var E=S.entregas; T['Entregas']=[['Entrega','Detalhe','Link ou registro','Concluída'],['Plano de mensuração','',E.plano.link,yn(E.plano.feito)],['Tags validadas em homologação','',E.tags.link,yn(E.tags.feito)],['Dashboard em uso pela squad','',E.dash.link,yn(E.dash.feito)],['One-pager de oportunidade','',E.onep.link,yn(E.onep.feito)]].concat(E.entr.map(function(x,k){return ['Entrevista ou teste '+(k+1),x.quando,x.aprend,yn(x.feito)]})).concat(E.edai.map(function(x,k){return ['"E daí?" '+(k+1),x.dash,x.linha,yn(x.feito)]}));
+  T['Análises']=[['Prazo','Tema','Pergunta de negócio','Data','Achado','So What e recomendação','Apresentada']].concat(ANALISES.map(function(a,k){var x=S.analises[k];return [a[0],a[1],x.pergunta,x.data,x.achado,x.recomendacao,yn(x.feita)]})).concat([['','SQL do mês','Pergunta','','Resposta','','Feito']]).concat(S.sql.map(function(x,k){return ['Mês '+(k+1),'SQL do mês',x.pergunta,'',x.resposta,'',yn(x.feito)]}));
+  var E=S.entregas; T['Entregas']=[['Entrega','Detalhe','Link ou registro','Concluída'],['Plano de mensuração','',E.plano.link,yn(E.plano.feito)],['Tags validadas em homologação','',E.tags.link,yn(E.tags.feito)],['Dashboard em uso pela squad','',E.dash.link,yn(E.dash.feito)],['One-pager de oportunidade','',E.onep.link,yn(E.onep.feito)]].concat(E.entr.map(function(x,k){return ['Entrevista ou teste '+(k+1),x.quando,x.aprend,yn(x.feito)]})).concat(E.edai.map(function(x,k){return ['So What '+(k+1),x.dash,x.linha,yn(x.feito)]}));
   T['Feedback']=[['Quem','Nome','Janela','Data','O que ouvi','O que vou mudar','Até quando']].concat(REDE.map(function(r,k){var x=S.rede[k];return [r[0],x.nome,r[1],x.data,x.ouvi,x.mudar,x.ate]})).concat(S.mentor.conversas.map(function(x,k){return ['Mentor externo, conversa '+(k+1),S.mentor.nome,'',x.data,x.ouvi,'','']}));
   T['Jogos']=[['Jogo','Critério','Evidência','Gol']].concat(MARCOS.map(function(m,k){var x=S.marcos[k];return [m[0],m[1],x.evidencia,yn(x.feito)]}));
   var jog={}; PLAYERS.slice().sort(function(a,b){return a.n-b.n}).forEach(function(p){jog[p.n+' '+p.name]=pXP(R0,p.n)});
@@ -417,7 +417,7 @@ var GUIDES={
  rotina:['whistle','Sua rotina semanal',['Escolha a semana na grade e marque cada rito quando ele acontecer.','A semana fica verde quando os 5 ritos obrigatórios estão marcados: vale 5 pontos.','Se alguém precisar cobrar status, registre um cartão amarelo. A meta é zero.']],
  cursos:['book','Roadmap de estudo',['Até a 2ª semana, preencha início, conclusão e horas por semana de cada formação.','Marque o roadmap como apresentado depois de mostrar ao mentor: vale 30 pontos.','Mude o status para Concluído quando terminar, com o certificado em mãos.']],
  agenda:['cal','Agenda do mês',['Uma apresentação interna e um post no LinkedIn por mês, durante 6 meses.','Registre o tema antes e marque Feita ou Publicado depois.','Nos posts, nada de dado interno, print ou nome de cliente.']],
- analises:['chart','Análises a cada 20 dias',['Defina a pergunta de negócio com o mentor antes de abrir os dados.','Registre achado e recomendação: é o "e daí?" que transforma número em decisão.','Marque Apresentada depois de mostrar à squad: vale 40 pontos.']],
+ analises:['chart','Análises a cada 20 dias',['Defina a pergunta de negócio com o mentor antes de abrir os dados.','Registre achado e recomendação: é o So What que transforma número em decisão.','Marque Apresentada depois de mostrar à squad: vale 40 pontos.']],
  entregas:['form','Mensuração e produto',['Cole o link da evidência (documento, dashboard, ticket) antes de marcar.','Cada entrega marcada soma pontos para as camisas 8 e 10.','Em dúvida se conta? Leve para o 1:1 e decida com o mentor.']],
  rede:['people','Rede de feedback',['Use o roteiro das 4 perguntas em todas as conversas.','A conversa conta quando tem data e o que você ouviu registrado.','Traga o registro para o 1:1 seguinte.']],
  jogos:['goal','Jogos decisivos',['São os quatro marcos da temporada. Cada um vencido vale um gol e 100 pontos.','Registre a evidência e marque o gol só depois de conferir com o mentor.','Os jogos seguem a ordem: 6 semanas, 3, 4 e 6 meses.']]};
@@ -436,12 +436,12 @@ var EX={
   casos:[['Curso de SQL',[['Início e conclusão','01/12/2026 a 31/01/2027','Dentro da referência de meses 1 a 2.'],['Horas por semana','4','Some as horas de todos os cursos: acima de 8 por semana costuma não caber.'],['Onde vou aplicar','Pergunta de negócio do mês e base do funil de conversão','Liga o curso a uma entrega real.'],['Status','Concluído (com certificado)','Só mude para Concluído com o certificado em mãos.']]]]},
  agenda:{para:'Treina comunicação para dentro e para fora: uma apresentação interna e um post por mês, com público que cresce ao longo da temporada.',
   casos:[['Mês 2',[['Apresentação: tema','Como montei o plano de mensuração do onboarding','Tema concreto, ligado a algo que você fez.'],['Ponto forte e ajuste','Forte: exemplos claros. Ajuste: começar pela recomendação, não pelo método.','Registre a frase como ouviu.'],['Post: tema','3 erros comuns ao nomear eventos de analytics','Aprendizado geral, sem dado nem nome interno.']]]]},
- analises:{para:'Ensina a ler cada fonte de tráfego. Toda análise segue a mesma estrutura: pergunta, dado, achado, "e daí?" e recomendação.',
-  casos:[['Funil de conversão',[['Pergunta de negócio','Em qual etapa do funil de abertura de conta perdemos mais pessoas no celular?','Uma pergunta só, que leva a uma decisão.'],['Principal achado','A maior perda está no envio de documento: no celular, quase o dobro do abandono do desktop (números fictícios).','Compara grupos e aponta a etapa.'],['"E daí?" e recomendação','Testar captura do documento pela câmera e medir o abandono por 2 semanas.','Termina em uma ação testável.']]],
+ analises:{para:'Ensina a ler cada fonte de tráfego. Toda análise segue a mesma estrutura: pergunta, dado, achado, So What e recomendação.',
+  casos:[['Funil de conversão',[['Pergunta de negócio','Em qual etapa do funil de abertura de conta perdemos mais pessoas no celular?','Uma pergunta só, que leva a uma decisão.'],['Principal achado','A maior perda está no envio de documento: no celular, quase o dobro do abandono do desktop (números fictícios).','Compara grupos e aponta a etapa.'],['So What e recomendação','Testar captura do documento pela câmera e medir o abandono por 2 semanas.','Termina em uma ação testável.']]],
    ['SQL do mês',[['Pergunta','Quantos usuários voltaram ao app em até 7 dias após o primeiro acesso?',''],['Resposta em uma frase','Cerca de 4 em cada 10 voltaram em até 7 dias (exemplo fictício).','Resposta curta, com o recorte de tempo.']]]]},
  entregas:{para:'Registra as entregas práticas de mensuração e de produto, cada uma com o link da evidência para o mentor conferir.',
   casos:[['Mensuração',[['Plano de mensuração: link','Link do documento no repositório da squad','Sem link, a jogada não conta.']]],
-   ['"E daí?"',[['Dashboard','Funil de onboarding',''],['A decisão que ele sugere','Priorizar a etapa de documento no próximo sprint.','Uma frase que diz o que fazer com o número.']]]]},
+   ['So What',[['Dashboard','Funil de onboarding',''],['A decisão que ele sugere','Priorizar a etapa de documento no próximo sprint.','Uma frase que diz o que fazer com o número.']]]]},
  rede:{para:'Constrói a rede que dá feedback fora do dia a dia. Cada conversa registrada vira um plano de mudança com prazo.',
   casos:[['Conversa com coordenação',[['O que ouvi','Explico bem o dado, mas não digo o que fazer com ele.','Escreva como ouviu, sem se defender.'],['O que vou mudar','Fechar toda análise com uma recomendação.','Uma mudança só, observável.'],['Até quando','28/02/2027','Prazo para revisar no 1:1.']]]]},
  jogos:{para:'São os quatro marcos da temporada. Cada um vencido vale um gol e 100 pontos, e só conta depois que o mentor confere a evidência.',
@@ -539,9 +539,9 @@ V.agenda=function(){
 };
 V.analises=function(){
   var sp=secPts(R,'analises'), s=head('analises','Análises','Uma análise de fonte de tráfego a cada 20 dias, com dados da empresa, e uma pergunta de negócio por mês respondida em SQL.');
-  s+='<div class="spread"><span class="muted">Estrutura fixa: pergunta, dado, achado, "e daí?" e recomendação.</span><span class="pts">'+sp[0]+' / '+sp[1]+' pts</span></div>';
+  s+='<div class="spread"><span class="muted">Estrutura fixa: pergunta, dado, achado, So What e recomendação.</span><span class="pts">'+sp[0]+' / '+sp[1]+' pts</span></div>';
   ANALISES.forEach(function(a,k){var x=S.analises[k];
-    s+='<div class="card'+(x.feita?' done':'')+'"><div class="spread"><div><div class="lbl">'+a[0]+'</div><h3>'+a[1]+'</h3></div>'+ptsTag(x.feita,40)+'</div><p class="small muted">O que analisar: '+esc(a[2])+'</p><div class="grid2">'+txt('analises.'+k+'.pergunta','Pergunta de negócio','Definida com o mentor')+txt('analises.'+k+'.data','Data da apresentação','',{type:'date'})+txt('analises.'+k+'.achado','Principal achado','',{area:1})+txt('analises.'+k+'.recomendacao','"E daí?" e recomendação','',{area:1})+'</div>'+chk('analises.'+k+'.feita','Análise apresentada à squad')+'</div>'});
+    s+='<div class="card'+(x.feita?' done':'')+'"><div class="spread"><div><div class="lbl">'+a[0]+'</div><h3>'+a[1]+'</h3></div>'+ptsTag(x.feita,40)+'</div><p class="small muted">O que analisar: '+esc(a[2])+'</p><div class="grid2">'+txt('analises.'+k+'.pergunta','Pergunta de negócio','Definida com o mentor')+txt('analises.'+k+'.data','Data da apresentação','',{type:'date'})+txt('analises.'+k+'.achado','Principal achado','',{area:1})+txt('analises.'+k+'.recomendacao','So What e recomendação','',{area:1})+'</div>'+chk('analises.'+k+'.feita','Análise apresentada à squad')+'</div>'});
   s+='<h3 style="margin-top:8px">SQL do mês</h3>';
   s+='<div class="grid2">'+S.sql.map(function(x,k){return '<div class="card'+(x.feito?' done':'')+'"><div class="spread"><h3>Mês '+(k+1)+'</h3>'+ptsTag(x.feito,15)+'</div>'+txt('sql.'+k+'.pergunta','Pergunta','')+txt('sql.'+k+'.resposta','Resposta em uma frase','')+chk('sql.'+k+'.feito','Respondida em SQL e conferida')+'</div>'}).join('')+'</div>';
   return s;
@@ -552,7 +552,7 @@ V.entregas=function(){
   function one(k,t,p){return '<div class="card'+(E[k].feito?' done':'')+'"><div class="spread"><h3>'+t+'</h3>'+ptsTag(E[k].feito,p)+'</div>'+txt('entregas.'+k+'.link','Link da evidência','',{type:'url'})+chk('entregas.'+k+'.feito','Concluído')+'</div>'}
   s+='<h3>Mensuração</h3><div class="grid3">'+one('plano','Plano de mensuração',30)+one('tags','Tags validadas em homologação',30)+one('dash','Dashboard em uso pela squad',40)+'</div>';
   s+='<h3>Produto</h3><div class="grid2">'+E.entr.map(function(x,k){return '<div class="card'+(x.feito?' done':'')+'"><div class="spread"><h3>Entrevista ou teste '+(k+1)+'</h3>'+ptsTag(x.feito,15)+'</div>'+txt('entregas.entr.'+k+'.quando','Data','',{type:'date'})+txt('entregas.entr.'+k+'.aprend','3 aprendizados','',{area:1})+chk('entregas.entr.'+k+'.feito','Observei e anotei')+'</div>'}).join('')+'</div>';
-  s+='<div class="grid3">'+E.edai.map(function(x,k){return '<div class="card'+(x.feito?' done':'')+'"><div class="spread"><h3>"E daí?" '+(k+1)+'</h3>'+ptsTag(x.feito,10)+'</div>'+txt('entregas.edai.'+k+'.dash','Dashboard','')+txt('entregas.edai.'+k+'.linha','A decisão que ele sugere','',{area:1})+chk('entregas.edai.'+k+'.feito','Linha entregue com o dashboard')+'</div>'}).join('')+'</div>';
+  s+='<div class="grid3">'+E.edai.map(function(x,k){return '<div class="card'+(x.feito?' done':'')+'"><div class="spread"><h3>So What '+(k+1)+'</h3>'+ptsTag(x.feito,10)+'</div>'+txt('entregas.edai.'+k+'.dash','Dashboard','')+txt('entregas.edai.'+k+'.linha','A decisão que ele sugere','',{area:1})+chk('entregas.edai.'+k+'.feito','Linha entregue com o dashboard')+'</div>'}).join('')+'</div>';
   s+=one('onep','One-pager de oportunidade (hipótese, métrica de sucesso e dado de suporte)',50);
   return s;
 };
