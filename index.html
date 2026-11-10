@@ -50,11 +50,12 @@ main{max-width:1180px;margin:0 auto;padding:18px 16px 64px;display:flex;flex-dir
 .switch[aria-checked="true"] i{background:var(--grass)}
 .switch[aria-checked="true"] i::after{left:16px}
 
-.guide{background:var(--gold-soft);border:1px solid #F0D58C;border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:start}
-.guide svg{grid-row:span 3;width:54px;height:54px}
+.guide{background:var(--gold-soft);border:1px solid #F0D58C;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.ghead{display:flex;align-items:center;gap:12px}
+.ghead svg{width:44px;height:44px;flex:none}
 .guide h3{font-size:17px}
-.guide ol{margin:4px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:3px}
-.guide .row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.guide ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:3px}
+.guide .row{display:flex;gap:8px;flex-wrap:wrap}
 
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .card.done{border-left:6px solid var(--grass)}
@@ -156,7 +157,7 @@ tr.cur td{background:#E3EEDF;font-weight:600}
   .weeks{grid-template-columns:repeat(6,1fr)}
   .score .v{font-size:32px} .score .v.word{font-size:22px;line-height:32px}
   main{padding-top:14px}
-  .guide{grid-template-columns:1fr}.guide svg{display:none}
+  .ghead svg{width:34px;height:34px}
   .hide-mobile{display:none}
 }
 .syncpill{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#B9C8BD;white-space:nowrap}
@@ -297,7 +298,7 @@ function push(){if(!SY.url||!SY.key)return Promise.resolve(false);var x=tables()
 function pull(){if(!SY.url||!SY.key)return Promise.resolve(false);setSync('busy');
   return fetch(SY.url+(SY.url.indexOf('?')>-1?'&':'?')+'action=load&key='+encodeURIComponent(SY.key)).then(function(r){return r.json()}).then(function(j){
     if(!j||!j.ok){setSync('err',j&&j.erro==='codigo'?'O código da temporada não confere. Peça o código ao mentor.':'Não foi possível ler a planilha.');return false}
-    if(j.state&&j.state.v===2&&(!S.atualizado||(j.state.atualizado||'')>S.atualizado)){var sec=S.sec;S=merge(DEF(),j.state);S.sec=sec;save(false);var d0=new Date();SY.last=('0'+d0.getHours()).slice(-2)+':'+('0'+d0.getMinutes()).slice(-2);SY.status='ok';render();setSync('ok','Registros carregados da planilha.');return true}
+    if(j.state&&j.state.v===2&&(!S.atualizado||(j.state.atualizado||'')>S.atualizado)){var sec=S.sec;S=merge(DEF(),j.state);S.sec=sec;if(S.boasVindas)showWelcome=false;save(false);var d0=new Date();SY.last=('0'+d0.getHours()).slice(-2)+':'+('0'+d0.getMinutes()).slice(-2);SY.status='ok';render();setSync('ok','Registros carregados da planilha.');return true}
     return push()}).catch(function(){setSync('err','Não foi possível falar com a planilha. Confira o endereço do servidor.');return false})}
 function get(p){return p.split('.').reduce(function(o,k){return o==null?o:o[k]},S)}
 function set(p,v){var ks=p.split('.'),o=S;for(var i=0;i<ks.length-1;i++)o=o[ks[i]];o[ks[ks.length-1]]=v}
@@ -460,7 +461,7 @@ function guideOn(sec){return S.guias[sec]!==false}
 function head(sec,title,lead){var on=guideOn(sec),g=GUIDES[sec];
   var s='<div class="sec-head"><div><h2>'+title+'</h2>'+(lead?'<p class="lead">'+lead+'</p>':'')+'</div><button class="switch" role="switch" aria-checked="'+on+'" data-a="guide" data-s="'+sec+'" id="sw_'+sec+'"><i></i>Guia</button></div>';
   if(on&&g){var eo=!!exOpen[sec];
-    s+='<div class="guide">'+ICON[g[0]]+'<h3>'+g[1]+'</h3>'+(EX[sec]?'<div class="purpose"><b>Para que serve</b>'+esc(EX[sec].para)+'</div>':'')+'<ol>'+g[2].map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ol>'+(eo?exHTML(sec):'')+'<div class="row">'+(EX[sec]?'<button class="btn" data-a="ex" data-s="'+sec+'" aria-expanded="'+eo+'" id="exb_'+sec+'">'+(eo?'Esconder exemplo':'Ver exemplo de preenchimento')+'</button>':'')+'<button class="btn ghost" data-a="guide" data-s="'+sec+'">Entendi, esconder guia</button></div></div>';}
+    s+='<div class="guide"><div class="ghead">'+ICON[g[0]]+'<h3>'+g[1]+'</h3></div>'+(EX[sec]?'<div class="purpose"><b>Para que serve</b>'+esc(EX[sec].para)+'</div>':'')+'<ol>'+g[2].map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ol>'+(eo?exHTML(sec):'')+'<div class="row">'+(EX[sec]?'<button class="btn" data-a="ex" data-s="'+sec+'" aria-expanded="'+eo+'" id="exb_'+sec+'">'+(eo?'Esconder exemplo':'Ver exemplo de preenchimento')+'</button>':'')+'<button class="btn ghost" data-a="guide" data-s="'+sec+'">Entendi, esconder guia</button></div></div>';}
   return s}
 var wStep=0, showWelcome=!S.boasVindas;
 function welcome(){var w=WELCOME[wStep],last=wStep===WELCOME.length-1;
@@ -599,14 +600,14 @@ app.addEventListener('click',function(e){
   if(a==='ex'){var sx=t.getAttribute('data-s');exOpen[sx]=!exOpen[sx];render();var eb=document.getElementById('exb_'+sx);if(eb)eb.focus({preventScroll:true});return}
   if(a==='extab'){exTab[t.getAttribute('data-s')]=+t.getAttribute('data-i');return render()}
   if(a==='week'){S.rotina.sel=+t.getAttribute('data-i'); save(false); return render()}
-  if(a==='cadd'){S.cartoes.push({data:new Date().toISOString().slice(0,10),motivo:''}); save(true); return render()}
+  if(a==='cadd'){var dn=new Date();S.cartoes.push({data:dn.getFullYear()+'-'+('0'+(dn.getMonth()+1)).slice(-2)+'-'+('0'+dn.getDate()).slice(-2),motivo:''}); save(true); return render()}
   if(a==='cdel'){S.cartoes.splice(+t.getAttribute('data-i'),1); save(true); return render()}
   if(a==='wnext'){wStep++; return render()} if(a==='wprev'){wStep--; return render()}
   if(a==='wskip'||a==='wend'){showWelcome=false; S.boasVindas=true; save(); return render()}
   if(a==='wopen'){wStep=0; showWelcome=true; return render()}
   if(a==='sync'){var u=(document.getElementById('sy_url')||{}).value||'',k=(document.getElementById('sy_key')||{}).value||'';SY.url=u.trim();SY.key=k.trim();saveSync();if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(SY.url)){setSync('err','O endereço precisa começar com https://script.google.com/');return}if(!SY.key){setSync('err','Informe o código da temporada.');return}pull();return}
   if(a==='unsync'){SY.key='';SY.status='off';saveSync();setSync('off','Desconectado. Os dados continuam neste navegador.');var kk=document.getElementById('sy_key');if(kk)kk.value='';return}
-  if(a==='export'){var blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'}),u=URL.createObjectURL(blob),l=document.createElement('a');l.href=u;l.download='temporada-growth-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(function(){URL.revokeObjectURL(u)},2000);msg('Backup gerado. Guarde o arquivo em um lugar seguro.');return}
+  if(a==='export'){var blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'}),u=URL.createObjectURL(blob),l=document.createElement('a');l.href=u;l.download='temporada-growth-'+(function(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)})(new Date())+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(function(){URL.revokeObjectURL(u)},2000);msg('Backup gerado. Guarde o arquivo em um lugar seguro.');return}
   if(a==='reset'){if(Date.now()-resetArm<5000){S=DEF();S.boasVindas=true;save(true);resetArm=0;render();msg('Tudo apagado. A temporada recomeçou do zero.');return}resetArm=Date.now();t.textContent='Toque de novo para confirmar';setTimeout(function(){var b=document.getElementById('resetbtn');if(b)b.textContent='Apagar tudo'},5000);return}
 });
 app.addEventListener('keydown',function(e){
