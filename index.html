@@ -262,7 +262,7 @@ function DEF(){return {v:2,perfil:{nome:'',gestor:'',inicio:''},
 function merge(d,s){if(Array.isArray(d)){return d.map(function(x,i){return (s&&s[i]!==undefined)?merge(x,s[i]):x}).concat(Array.isArray(s)&&d.length===0?s:[])}
  if(d&&typeof d==='object'){var o={};Object.keys(d).forEach(function(k){o[k]=(s&&s[k]!==undefined)?merge(d[k],s[k]):d[k]});if(s&&typeof s==='object')Object.keys(s).forEach(function(k){if(!(k in o))o[k]=s[k]});return o}
  return (s===undefined||s===null||typeof s!==typeof d)?d:s}
-var SYNC_URL_DEFAULT='';
+var SYNC_URL_DEFAULT='https://script.google.com/macros/s/AKfycbyDi-Km-E4lkGML728jzLmzxAgmHmkhSKLg-jsImxW8lmzywMXjPuGdfyy78L6_RaeSuw/exec';
 var S=DEF(), canStore=true;
 var SY={url:'',key:'',status:'off',last:'',msg:''};
 try{var sy=JSON.parse(localStorage.getItem(KEY+'-sync')||'{}'); SY.url=sy.url||SYNC_URL_DEFAULT; SY.key=sy.key||''}catch(e){SY.url=SYNC_URL_DEFAULT}
