@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Temporada de Growth</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Barlow:wght@400;500;600&display=swap">
+<style id="css">
+:root{
+  /* Prancheta tática: campo verde como peça central, placar escuro de estádio, ímãs brancos como jogadores */
+  --board:#E4E8E2; --panel:#F6F8F4; --ink:#14231B; --muted:#55655B; --line:#C9D1C8;
+  --grass:#2F8052; --grass-alt:#2A7549; --chalk:#F4F7F0;
+  --placard:#13221A; --placard-ink:#F4F7F0; --gold:#F5B82E; --red:#D23B3B;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Barlow","Segoe UI",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--board);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+.wrap{max-width:1240px;margin:0 auto;padding:20px 16px 48px;display:flex;flex-direction:column;gap:16px}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 20px}
+h1{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;margin:0;letter-spacing:.01em;text-transform:uppercase;text-wrap:balance}
+h1 span{color:var(--grass)}
+h2{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.05;margin:0;text-transform:uppercase;letter-spacing:.02em}
+.status{font-size:13px;color:var(--muted)}
+.status b{color:var(--ink);font-weight:600}
+
+.score{background:var(--placard);color:var(--placard-ink);border-radius:10px;display:grid;grid-template-columns:repeat(5,1fr);overflow:hidden}
+.score>div{padding:14px 16px 12px;border-left:1px solid #2b3d33;display:flex;flex-direction:column;gap:2px;min-width:0}
+.score>div:first-child{border-left:0}
+.lbl{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#9FB3A6}
+.big{font-family:var(--display);font-weight:800;font-size:46px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:18px;font-weight:600;color:#9FB3A6;margin-left:4px}
+.big.gold{color:var(--gold)}
+.big.word{font-size:36px;line-height:46px;overflow-wrap:anywhere;text-transform:uppercase}
+.sub{font-size:12px;color:#B9C8BD}
+.mini{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.mini button{font:600 12px var(--body);color:var(--placard-ink);background:#24362c;border:1px solid #3a4f43;border-radius:6px;padding:5px 9px;cursor:pointer}
+.mini button:hover{background:#2f4539}
+
+.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+.pitch{background:var(--placard);border-radius:10px;padding:10px}
+.pitch svg{display:block;width:100%;height:auto;border-radius:4px}
+.tok{cursor:pointer}
+.tok:focus{outline:none}
+.tok:focus-visible .halo,.tok.sel .halo{stroke:var(--gold);stroke-width:5;opacity:1}
+.caption{color:#B9C8BD;font-size:12.5px;padding:8px 4px 2px}
+
+.sumula{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.shirt{display:flex;gap:12px;align-items:center}
+.num{font-family:var(--display);font-weight:800;font-size:44px;line-height:1;width:56px;height:56px;border-radius:50%;background:var(--ink);color:var(--chalk);display:grid;place-items:center;flex:none}
+.num.gk{background:var(--gold);color:var(--ink)}
+.pos{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.bar{height:8px;background:#DDE3DB;border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--grass)}
+.ms{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.ms li{border-top:1px solid var(--line);padding-top:10px;display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center}
+.ms .t{font-weight:500}
+.ms .x{font-size:12.5px;color:var(--muted)}
+.step{display:flex;align-items:center;gap:6px}
+.step button,.btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--ink);background:var(--panel);color:var(--ink);font:600 18px var(--body);cursor:pointer}
+.step button:hover{background:#E6ECE4}
+.step button:disabled{opacity:.3;cursor:default}
+.step output{font-family:var(--display);font-weight:800;font-size:24px;min-width:54px;text-align:center;font-variant-numeric:tabular-nums}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+.games{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.game{background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.game.done{border-left-color:var(--grass)}
+.game .when{font-family:var(--display);font-weight:800;font-size:22px;text-transform:uppercase;line-height:1}
+.game p{margin:0;font-size:13.5px;flex:1}
+.game button{align-self:flex-start;font:600 13px var(--body);padding:8px 12px;border-radius:8px;border:1px solid var(--ink);background:var(--panel);color:var(--ink);cursor:pointer}
+.game.done button{background:var(--grass);border-color:var(--grass);color:#fff}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-top:0}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.cur td{background:#E3EEDF;font-weight:600}
+.card ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.squad td:first-child{font-family:var(--display);font-weight:800;font-size:18px;width:28px}
+.squad button{all:unset;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.squad button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+@media (max-width:980px){.main{grid-template-columns:1fr}.score{grid-template-columns:repeat(2,1fr)}.score>div{border-left:0;border-top:1px solid #2b3d33}.games{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}}
+@media (max-width:480px){.games{grid-template-columns:1fr}h1{font-size:32px}.big{font-size:38px}}
+@media (prefers-reduced-motion:no-preference){.ball{transition:transform .6s ease}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="application/json" id="state">{"v":1,"m":{},"gols":[0,0,0,0],"seq":0,"cards":0,"sel":1,"updated":""}</script>
+<script id="code">
+(function(){
+var PLAYERS=[
+ {n:1,pos:'Goleiro',name:'Rotina',x:70,y:330,gk:true,ms:[['rot','Semana com a rotina completa: planejamento, board de tarefas, roadmap e PMO em dia, andamento e resultados dos projetos acompanhados, resumo de sexta',5,24],['bon','Bônus por 4 semanas seguidas sem quebrar',10,6]]},
+ {n:2,pos:'Lateral direito',name:'SQL',x:250,y:545,ms:[['road','Roadmap de estudo apresentado ao gestor até a 2ª semana',30,1],['sqlc','Curso de SQL da Midori concluído',40,1]]},
+ {n:3,pos:'Zagueiro',name:'Google',x:215,y:405,ms:[['ga','Certificação do Google Analytics',40,1]]},
+ {n:4,pos:'Zagueiro',name:'Métricas Boss',x:215,y:255,ms:[['mb','Certificação de digital analytics da Métricas Boss',60,1]]},
+ {n:6,pos:'Lateral esquerdo',name:'Tera',x:250,y:115,ms:[['tera','Digital Product Leadership da Tera concluída',100,1]]},
+ {n:5,pos:'Volante',name:'Análises',x:420,y:330,ms:[['anal','Análise de fonte de tráfego apresentada, com "e daí?" e recomendação',40,6],['sqlm','Pergunta de negócio do mês respondida em SQL',15,6]]},
+ {n:8,pos:'Meia',name:'Mensuração',x:570,y:455,ms:[['plano','Plano de mensuração escrito',30,1],['tags','Tags validadas em homologação',30,1],['dash','Dashboard em uso pela squad',40,1]]},
+ {n:10,pos:'Meia',name:'Produto',x:570,y:205,ms:[['entr','Entrevista ou teste com cliente observado, com 3 aprendizados anotados',15,2],['edai','Linha de "e daí?" em um dashboard entregue',10,3],['onep','One-pager de oportunidade apresentado',50,1]]},
+ {n:7,pos:'Ponta direita',name:'Posts',x:800,y:540,ms:[['post','Post do mês publicado no LinkedIn',15,6]]},
+ {n:11,pos:'Ponta esquerda',name:'Apresentações',x:800,y:120,ms:[['apres','Apresentação interna do mês feita, com ponto forte e ajuste registrados',25,6]]},
+ {n:9,pos:'Centroavante',name:'Feedback',x:880,y:330,ms:[['fb','Conversa de feedback registrada: coordenação, gerência e diretoria',20,7],['ment','Conversa com o mentor externo',15,3]]}
+];
+var GAMES=[
+ ['6 semanas','Rotina cumprida por 6 semanas seguidas, roadmap de estudo aprovado e mentor externo escolhido.'],
+ ['3 meses','Feature mensurada de ponta a ponta e feedback de 4 coordenadores ou pares seniores.'],
+ ['4 meses','One-pager de oportunidade apresentado à squad e feedback de 2 gerentes.'],
+ ['6 meses','Resultado apresentado em fórum com a liderança sênior, quatro formações concluídas e síntese dos 8 feedbacks entregue.']
+];
+var DIVS=[[0,'Base','Defesa','Ponto de partida'],[250,'Profissional','Meio-campo','Escolhe a próxima demanda que quer pegar'],[600,'Titular','Ataque','Apresenta um resultado na review no lugar do gestor'],[1000,'Craque','Grande área','Um dia de estudo livre e um curso ou livro à escolha']];
+var ANALISES=[
+ ['Dia 20','Funil de conversão','Conversão e abandono por etapa, por dispositivo e por segmento; onde está a maior perda.'],
+ ['Dia 40','CRM','Entrega, abertura, clique e conversão pós-clique de e-mail, push e SMS, por segmento; descadastro.'],
+ ['Dia 60','Banners internos','Impressões, CTR por posição e criativo, conversão pós-clique e canibalização entre banners.'],
+ ['Dia 80','Mídias pagas','Custo por conversão por canal e campanha, qualidade do tráfego e leitura do modelo de atribuição.'],
+ ['Dia 100','Teste A/B','Hipótese, métrica primária, tamanho de amostra, significância e decisão recomendada.'],
+ ['Dia 120','SEO','Sessões orgânicas de marca e não marca, páginas de entrada, CTR e posição por consulta, conversão do orgânico.']
+];
+var GOAL_XP=100;
+var app=document.getElementById('app');
+var state=JSON.parse(document.getElementById('state').textContent);
+var artifact=null, mode='loading', saveMsg='', timer=null;
+
+function cnt(id){return state.m[id]||0}
+function pXP(p){return p.ms.reduce(function(s,m){return s+cnt(m[0])*m[2]},0)}
+function pMax(p){return p.ms.reduce(function(s,m){return s+m[3]*m[2]},0)}
+function gols(){return state.gols.reduce(function(s,g){return s+(g?1:0)},0)}
+function total(){return PLAYERS.reduce(function(s,p){return s+pXP(p)},0)+gols()*GOAL_XP}
+function maxTotal(){return PLAYERS.reduce(function(s,p){return s+pMax(p)},0)+GAMES.length*GOAL_XP}
+function divIdx(xp){var i=0;DIVS.forEach(function(d,k){if(xp>=d[0])i=k});return i}
+function fmt(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.')}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+
+/* Campo em escala real: 105 m x 68 m, 10 unidades por metro */
+function ballX(xp){
+  var edges=[DIVS[0][0],DIVS[1][0],DIVS[2][0],DIVS[3][0],maxTotal()], i=Math.min(divIdx(xp),3);
+  var f=Math.min(1,(xp-edges[i])/(edges[i+1]-edges[i]));
+  return 30+(i+f)*247.5;
+}
+function pitch(){
+  var s='', xp=total(), di=divIdx(xp), i;
+  s+='<svg viewBox="0 0 1050 680" role="group" aria-label="Campo com os 11 jogadores da temporada">';
+  s+='<rect width="1050" height="680" fill="#2F8052"/>';
+  for(i=0;i<12;i+=2) s+='<rect x="'+(i*87.5)+'" width="87.5" height="680" fill="#2A7549"/>';
+  for(i=0;i<4;i++){
+    var zx=30+i*247.5;
+    if(i===di) s+='<rect x="'+zx+'" y="20" width="247.5" height="640" fill="#F5B82E" opacity=".13"/>';
+    if(i>0) s+='<line x1="'+zx+'" y1="20" x2="'+zx+'" y2="660" stroke="#F4F7F0" stroke-opacity=".35" stroke-dasharray="6 10" stroke-width="2"/>';
+    s+='<text x="'+(zx+123.75)+'" y="52" text-anchor="middle" font-family="Big Shoulders Display,Arial Narrow,sans-serif" font-weight="800" font-size="24" fill="#F4F7F0" fill-opacity="'+(i===di?1:.6)+'" letter-spacing="1">'+DIVS[i][1].toUpperCase()+'</text>';
+    s+='<text x="'+(zx+123.75)+'" y="72" text-anchor="middle" font-family="Barlow,Arial,sans-serif" font-size="14" fill="#F4F7F0" fill-opacity="'+(i===di?.95:.6)+'">'+DIVS[i][2]+' · '+fmt(DIVS[i][0])+' pts</text>';
+  }
+  var L='fill="none" stroke="#F4F7F0" stroke-width="3"';
+  s+='<rect x="20" y="20" width="1010" height="640" '+L+'/>';
+  s+='<line x1="525" y1="20" x2="525" y2="660" stroke="#F4F7F0" stroke-width="3"/>';
+  s+='<circle cx="525" cy="340" r="91.5" '+L+'/><circle cx="525" cy="340" r="4" fill="#F4F7F0"/>';
+  s+='<rect x="20" y="138.5" width="165" height="403" '+L+'/><rect x="20" y="248.5" width="55" height="183" '+L+'/>';
+  s+='<rect x="865" y="138.5" width="165" height="403" '+L+'/><rect x="975" y="248.5" width="55" height="183" '+L+'/>';
+  s+='<circle cx="130" cy="340" r="4" fill="#F4F7F0"/><circle cx="920" cy="340" r="4" fill="#F4F7F0"/>';
+  s+='<path d="M185 267 A91.5 91.5 0 0 1 185 413" '+L+'/><path d="M865 267 A91.5 91.5 0 0 0 865 413" '+L+'/>';
+  s+='<rect x="6" y="303.4" width="14" height="73.2" '+L+'/><rect x="1030" y="303.4" width="14" height="73.2" fill="#F5B82E" fill-opacity=".35" stroke="#F5B82E" stroke-width="3"/>';
+  /* trilha da bola */
+  var bx=ballX(xp);
+  s+='<line x1="30" y1="636" x2="1020" y2="636" stroke="#F4F7F0" stroke-opacity=".3" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>';
+  s+='<line x1="30" y1="636" x2="'+bx+'" y2="636" stroke="#F5B82E" stroke-width="4" stroke-linecap="round"/>';
+  /* jogadores */
+  PLAYERS.forEach(function(p){
+    var c=2*Math.PI*37, pct=pMax(p)?pXP(p)/pMax(p):0, sel=p.n===state.sel;
+    s+='<g class="tok'+(sel?' sel':'')+'" data-a="sel" data-n="'+p.n+'" data-k="tok'+p.n+'" tabindex="0" role="button" aria-label="Camisa '+p.n+', '+esc(p.pos)+', '+esc(p.name)+': '+pXP(p)+' de '+pMax(p)+' pontos" transform="translate('+p.x+' '+p.y+')">';
+    s+='<circle class="halo" r="44" fill="none" stroke="#F4F7F0" stroke-width="0" opacity="0"/>';
+    s+='<circle r="37" fill="none" stroke="#13221A" stroke-opacity=".45" stroke-width="7"/>';
+    s+='<circle r="37" fill="none" stroke="#F5B82E" stroke-width="7" stroke-linecap="butt" stroke-dasharray="'+(c*pct).toFixed(1)+' '+c.toFixed(1)+'" transform="rotate(-90)"/>';
+    s+='<circle r="30" fill="'+(p.gk?'#F5B82E':'#F4F7F0')+'" stroke="#13221A" stroke-width="2"/>';
+    s+='<text y="11" text-anchor="middle" font-family="Big Shoulders Display,Arial Narrow,sans-serif" font-weight="800" font-size="32" fill="#13221A">'+p.n+'</text>';
+    var w=p.name.length*8.6+22;
+    s+='<rect x="'+(-w/2)+'" y="48" width="'+w+'" height="24" rx="12" fill="#13221A"/>';
+    s+='<text y="65" text-anchor="middle" font-family="Barlow,Arial,sans-serif" font-weight="600" font-size="15" fill="#F4F7F0">'+esc(p.name)+'</text>';
+    s+='</g>';
+  });
+  s+='<g class="ball" transform="translate('+bx.toFixed(1)+' 636)"><circle r="13" fill="#F4F7F0" stroke="#13221A" stroke-width="2"/><path d="M0 -6 L5.7 -1.9 L3.5 4.9 L-3.5 4.9 L-5.7 -1.9 Z" fill="#13221A"/></g>';
+  s+='</svg>';
+  return s;
+}
+function sumula(){
+  var p=PLAYERS.filter(function(q){return q.n===state.sel})[0]||PLAYERS[0], s='';
+  s+='<div class="shirt"><div class="num'+(p.gk?' gk':'')+'">'+p.n+'</div><div><div class="pos">'+esc(p.pos)+'</div><h2>'+esc(p.name)+'</h2></div></div>';
+  s+='<div><div class="bar"><i style="width:'+(pMax(p)?100*pXP(p)/pMax(p):0)+'%"></i></div><div class="x" style="font-size:12.5px;color:var(--muted);margin-top:4px">'+pXP(p)+' de '+pMax(p)+' pontos deste jogador</div></div>';
+  s+='<ul class="ms">';
+  p.ms.forEach(function(m){
+    var c=cnt(m[0]);
+    s+='<li><div><div class="t">'+esc(m[1])+'</div><div class="x">'+m[2]+' pontos por vez</div></div>';
+    s+='<div class="step"><button data-a="dec" data-id="'+m[0]+'" data-k="dec'+m[0]+'" aria-label="Tirar uma de: '+esc(m[1])+'"'+(c<=0?' disabled':'')+'>−</button><output>'+c+'/'+m[3]+'</output><button data-a="inc" data-id="'+m[0]+'" data-max="'+m[3]+'" data-k="inc'+m[0]+'" aria-label="Marcar uma de: '+esc(m[1])+'"'+(c>=m[3]?' disabled':'')+'>+</button></div></li>';
+  });
+  s+='</ul>';
+  return s;
+}
+function statusLine(){
+  if(saveMsg) return saveMsg;
+  if(mode==='shared') return 'Placar compartilhado: quem tem acesso de edição altera, e todos veem o mesmo.'+(state.updated?' Última atualização em <b>'+esc(state.updated)+'</b>.':'');
+  if(mode==='local') return 'O progresso fica salvo só neste navegador.';
+  return 'Carregando o placar…';
+}
+function render(){
+  var keep=document.activeElement&&document.activeElement.getAttribute?document.activeElement.getAttribute('data-k'):null;
+  var xp=total(), di=divIdx(xp), mx=maxTotal(), s='';
+  var next=di<3?('faltam '+fmt(DIVS[di+1][0]-xp)+' para '+DIVS[di+1][1]):'divisão máxima';
+  s+='<div class="wrap">';
+  s+='<header class="top"><h1>Temporada de Growth <span>programa de 6 meses</span></h1><div class="status" aria-live="polite">'+statusLine()+'</div></header>';
+  s+='<p style="margin:0;max-width:75ch;color:var(--muted)">Programa para formar analista de Growth em 6 meses: rotina de trabalho, quatro formações, seis análises por fonte de tráfego, apresentações, posts e rede de feedback, pontuados como uma temporada de futebol.</p>';
+  s+='<section class="score" aria-label="Placar">';
+  s+='<div><span class="lbl">Pontos</span><span class="big gold">'+fmt(xp)+'<small>/ '+fmt(mx)+'</small></span><span class="sub">'+Math.round(100*xp/mx)+'% da temporada de 6 meses</span></div>';
+  s+='<div><span class="lbl">Divisão</span><span class="big word">'+DIVS[di][1]+'</span><span class="sub">'+next+'</span></div>';
+  s+='<div><span class="lbl">Gols</span><span class="big">'+gols()+'<small>de 4</small></span><span class="sub">um por jogo decisivo vencido</span></div>';
+  s+='<div><span class="lbl">Invicto</span><span class="big">'+state.seq+'<small>semanas</small></span><div class="mini"><button data-a="seq+" data-k="seqp">+1 semana</button><button data-a="seq0" data-k="seqz">Zerar</button></div></div>';
+  s+='<div><span class="lbl">Cartões amarelos</span><span class="big" style="color:'+(state.cards?'var(--gold)':'inherit')+'">'+state.cards+'</span><div class="mini"><button data-a="card+" data-k="cardp">+1 cobrança de status</button><button data-a="card-" data-k="cardm">Tirar</button></div></div>';
+  s+='</section>';
+  s+='<div class="main"><section class="pitch">'+pitch()+'<div class="caption">A bola avança pela linha de fundo conforme os pontos sobem. O anel dourado em volta de cada camisa mostra quanto aquele jogador já entregou. Toque em uma camisa para lançar as jogadas dela.</div></section>';
+  s+='<aside class="sumula" aria-label="Súmula do jogador">'+sumula()+'</aside></div>';
+  s+='<h2>Jogos decisivos</h2><section class="games">';
+  GAMES.forEach(function(g,i){
+    var d=state.gols[i];
+    s+='<div class="game'+(d?' done':'')+'"><div class="pos">'+(i+1)+'ª decisão · vale '+GOAL_XP+' pontos</div><div class="when">'+g[0]+'</div><p>'+esc(g[1])+'</p><button data-a="gol" data-i="'+i+'" data-k="gol'+i+'" aria-pressed="'+(d?'true':'false')+'">'+(d?'Gol marcado':'Marcar gol')+'</button></div>';
+  });
+  s+='</section>';
+  s+='<section class="card"><h2>Análises a cada 20 dias</h2><table><thead><tr><th>Prazo</th><th>Tema</th><th>O que analisar, com dados da empresa</th><th>Feita</th></tr></thead><tbody>';
+  ANALISES.forEach(function(a,i){s+='<tr'+(i<cnt('anal')?' class="cur"':'')+'><td class="n">'+a[0]+'</td><td>'+esc(a[1])+'</td><td style="font-weight:400">'+esc(a[2])+'</td><td>'+(i<cnt('anal')?'Sim':'Não')+'</td></tr>'});
+  s+='</tbody></table><div class="x" style="font-size:12.5px;color:var(--muted)">Cada análise apresentada vale 40 pontos na camisa 5. Os dados da empresa não saem dela.</div></section>';
+  s+='<div class="two"><section class="card"><h2>Elenco</h2><table class="squad"><thead><tr><th>Nº</th><th>Jogador</th><th>Posição</th><th>Pontos</th></tr></thead><tbody>';
+  PLAYERS.slice().sort(function(a,b){return a.n-b.n}).forEach(function(p){
+    s+='<tr'+(p.n===state.sel?' class="cur"':'')+'><td>'+p.n+'</td><td><button data-a="sel" data-n="'+p.n+'" data-k="row'+p.n+'">'+esc(p.name)+'</button></td><td>'+esc(p.pos)+'</td><td class="n">'+pXP(p)+' / '+pMax(p)+'</td></tr>';
+  });
+  s+='</tbody></table></section>';
+  s+='<section class="card"><h2>Divisões e prêmios</h2><table><thead><tr><th>Divisão</th><th>Pontos</th><th>Prêmio</th></tr></thead><tbody>';
+  DIVS.forEach(function(d,i){s+='<tr'+(i===di?' class="cur"':'')+'><td>'+d[1]+'</td><td class="n">'+fmt(d[0])+'</td><td>'+esc(d[3])+'</td></tr>'});
+  s+='</tbody></table><h2 style="margin-top:6px">Regulamento</h2><ul>';
+  ['Ponto só entra com a evidência: card fechado, documento publicado, certificado ou registro da conversa.','O gestor confere o placar no 1:1.','Sequência quebrada zera o Invicto, mas não tira ponto já ganho.','Cartão amarelo é quando alguém precisa cobrar status. A meta da temporada é zero.','Campeonato de um jogador só: sem ranking e sem exposição para a squad.','Promoção e remuneração ficam fora do jogo.'].forEach(function(t){s+='<li>'+esc(t)+'</li>'});
+  s+='</ul></section></div></div>';
+  app.innerHTML=s;
+  if(keep){var el=app.querySelector('[data-k="'+keep+'"]'); if(el&&!el.disabled) el.focus()}
+}
+
+function buildDoc(){
+  var css=document.getElementById('css').textContent, code=document.getElementById('code').textContent;
+  var json=JSON.stringify(state).replace(/</g,'\\u003c');
+  return '<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>Temporada de Growth</title>\n'
+   +'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Barlow:wght@400;500;600&display=swap">\n'
+   +'<style id="css">'+css+'</style>\n</head>\n<body>\n<div id="app"></div>\n'
+   +'<script type="application/json" id="state">'+json+'<\/script>\n<script id="code">'+code+'<\/script>\n</body>\n</html>\n';
+}
+function stamp(){var d=new Date(),p=function(n){return (n<10?'0':'')+n};return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()+' às '+p(d.getHours())+':'+p(d.getMinutes())}
+function changed(){
+  state.updated=stamp();
+  if(mode==='shared'){
+    saveMsg='Salvando…'; clearTimeout(timer);
+    timer=setTimeout(function(){
+      artifact.publish(buildDoc()).then(function(){saveMsg=''},function(e){
+        var c=String((e&&(e.code||e.message))||'');
+        saveMsg=/not_writer|not_granted/.test(c)?'Você tem acesso só de leitura: esta alteração não foi salva.':(/conflict/.test(c)?'Outra pessoa salvou ao mesmo tempo. O placar será recarregado.':'Não foi possível salvar agora. Tente de novo em instantes.');
+        render();
+      });
+    },1500);
+  } else { try{localStorage.setItem('growth-temporada',JSON.stringify(state))}catch(e){} }
+  render();
+}
+function act(t){
+  var a=t.getAttribute('data-a'), id=t.getAttribute('data-id');
+  if(a==='sel'){state.sel=+t.getAttribute('data-n'); render(); return}
+  if(a==='inc'){state.m[id]=Math.min(+t.getAttribute('data-max'),cnt(id)+1)}
+  else if(a==='dec'){state.m[id]=Math.max(0,cnt(id)-1)}
+  else if(a==='gol'){var i=+t.getAttribute('data-i'); state.gols[i]=state.gols[i]?0:1}
+  else if(a==='seq+'){state.seq++}
+  else if(a==='seq0'){state.seq=0}
+  else if(a==='card+'){state.cards++}
+  else if(a==='card-'){state.cards=Math.max(0,state.cards-1)}
+  else return;
+  changed();
+}
+app.addEventListener('click',function(e){var t=e.target.closest('[data-a]'); if(t&&!t.disabled) act(t)});
+app.addEventListener('keydown',function(e){
+  if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('tok')){e.preventDefault(); act(e.target)}
+});
+render();
+var use=window.claude&&window.claude.use?window.claude.use('artifact'):Promise.resolve(null);
+Promise.resolve(use).then(function(a){
+  if(a){artifact=a; mode='shared'}
+  else{mode='local'; try{var s=localStorage.getItem('growth-temporada'); if(s){var o=JSON.parse(s); if(o&&o.v===1) state=o}}catch(e){}}
+  render();
+},function(){mode='local'; render()});
+})();
+</script>
+</body>
+</html>
